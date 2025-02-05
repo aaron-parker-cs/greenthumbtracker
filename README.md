@@ -17,3 +17,5 @@ PORT=8800
 Next, you will need two terminal windows. This can easily be done in VS Code. Simply open a terminal in each folder, backend, and frontend, and run `npm start` in each and that's it!
 
 Thanks to nodemon and react, any changes you make in either side will reflect immediately to your development environment. To see the webpage, open the result from frontend, it should look something like http://localhost:5173.
+
+testing GitHub connection is working
