@@ -5,7 +5,7 @@ $olive: #76826E;
 $grayGreen: #94918C;
 $lightRed: #99696C;
 $darkGreen: #2C3530;
-
+/* Use bootstrap for now 
 html, body {
   margin: 0;
   padding: 0;
@@ -20,10 +20,10 @@ html, body {
 }
 
 .app {
-  display: flex;
-  justify-content: center;
 
   .container {
+    flex: 1;
+
     .link {
       text-decoration: none;
       color: inherit;
@@ -136,4 +136,4 @@ html, body {
         }
     }
   }
-}
+} */
