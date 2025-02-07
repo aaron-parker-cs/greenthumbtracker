@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../redux/user/slice";
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
+import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,11 @@ const Login = () => {
       navigate("/");
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
-        setError(err.response.data);
+        const errorMessage =
+          typeof err.response.data === "string"
+            ? err.response.data
+            : err.response.data.message;
+        setError(errorMessage);
       } else {
         setError("An unexpected error occurred");
       }
@@ -38,7 +42,7 @@ const Login = () => {
   return (
     <MDBCard fluid className="w-25 mx-auto mt-5 p-5 shadow border-0 rounded ">
       <MDBCardHeader className="text-center">
-        <h3>Login</h3>
+        <h3>Sign in</h3>
       </MDBCardHeader>
       <MDBCardBody className="d-flex flex-row align-items-center justify-content-center">
         <Form onSubmit={handleSubmit}>
@@ -46,7 +50,6 @@ const Login = () => {
             <Form.Control
               type="text"
               placeholder="username"
-              required
               onChange={handleChange}
             />
           </Form.Group>
@@ -55,18 +58,21 @@ const Login = () => {
             <Form.Control
               type="password"
               placeholder="password"
-              required
               onChange={handleChange}
             />
           </Form.Group>
 
-          <MDBBtn type="submit" className="mb-4 w-100">
-            Login
-          </MDBBtn>
+          <Button type="submit" className="mb-4 w-100">
+            Sign In
+          </Button>
 
-          {error && <p className="error">{error}</p>}
+          <Form.Group className="mb-4 text-center">
+            <Form.Text className="text-danger">
+              <span>{error}</span>
+            </Form.Text>
+          </Form.Group>
 
-          <span>
+          <span className="m-3">
             Don't have an account? <Link to="/register">Register</Link>
           </span>
         </Form>

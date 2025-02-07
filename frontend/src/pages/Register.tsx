@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
+import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
 
 const Register = () => {
   const [inputs, setInputs] = useState({
@@ -25,7 +25,11 @@ const Register = () => {
       navigate("/login");
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
-        setError(err.response.data);
+        const errorMessage =
+          typeof err.response.data === "string"
+            ? err.response.data
+            : err.response.data.message;
+        setError(errorMessage);
       } else {
         setError("An unexpected error occurred");
       }
@@ -43,7 +47,6 @@ const Register = () => {
             <Form.Control
               type="text"
               placeholder="username"
-              required
               onChange={handleChange}
             />
           </Form.Group>
@@ -52,7 +55,6 @@ const Register = () => {
             <Form.Control
               type="email"
               placeholder="email"
-              required
               onChange={handleChange}
             />
           </Form.Group>
@@ -61,18 +63,19 @@ const Register = () => {
             <Form.Control
               type="password"
               placeholder="password"
-              required
               onChange={handleChange}
             />
           </Form.Group>
 
-          <MDBBtn type="submit" className="mb-4 w-100">
+          <Button type="submit" className="mb-4 w-100">
             Register
-          </MDBBtn>
+          </Button>
 
-          {error && <p className="error">{error}</p>}
+          <Form.Group className="mb-4 text-center">
+            <Form.Text className="text-danger">{error}</Form.Text>
+          </Form.Group>
 
-          <span>
+          <span className="m-3">
             Have an account? <Link to="/login">Login</Link>
           </span>
         </Form>

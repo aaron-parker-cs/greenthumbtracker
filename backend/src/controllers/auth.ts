@@ -45,13 +45,13 @@ export const login = (req: Request, res: Response) => {
     db.query(q, [req.body.username], (err, data) => {
         if (err) return res.json(err);
         console.log(data);
-        if (Array.isArray(data) && data.length === 0) return res.status(404).json("Username or password incorrect 1!");
+        if (Array.isArray(data) && data.length === 0) return res.status(404).json("Username or password incorrect!");
 
         // Check if the password is correct
         const user = (data as any[])[0];
         const validPassword = bcrpt.compareSync(req.body.password, user.password);
 
-        if (!validPassword) return res.status(400).json("Username or password incorrect 2!");
+        if (!validPassword) return res.status(400).json("Username or password incorrect!");
 
         const token = jwt.sign({ id: user.id }, "jwtSecret"); // TODO -- move secret to .env
 
