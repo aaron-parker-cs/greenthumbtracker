@@ -7,8 +7,10 @@ const db = require('./db/db');
 
 import express from 'express';
 import authRoutes from './routes/auth';
+import plantRoutes from './routes/plants';
 import cookieParser from 'cookie-parser';
-
+import swaggerUi from 'swagger-ui-express';
+import { specs } from './config/swagger';
 
 const app = express();
 
@@ -20,6 +22,10 @@ app.use(express.json());
 
 // Use the routes
 app.use('/api/auth', authRoutes);
+app.use('/api/plants', plantRoutes);
+
+// Swagger -- API Documentation and routes testing
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, () => {
