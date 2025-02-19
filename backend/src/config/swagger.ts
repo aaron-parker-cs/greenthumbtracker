@@ -4,9 +4,8 @@ const swaggerUi = require('swagger-ui-express');
 const port = process.env.PORT || 8800;
 
 const options = {
-  // The top-level "definition" key:
   definition: {
-    openapi: '3.0.3', // or '3.0.3', etc.
+    openapi: '3.0.3',
     info: {
       title: 'Plant API',
       version: '1.0.0',
