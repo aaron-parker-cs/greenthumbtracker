@@ -33,11 +33,11 @@ router.get("/", verifyToken, getPlants);
  *             type: object
  *             properties:
  *               user_id:
- *                  type: number
+ *                 type: number
  *               name:
  *                 type: string
- *              species: 
- *                type: string
+ *               species: 
+ *                 type: string
  *     responses:
  *       201:
  *         description: Created a new plant
@@ -65,15 +65,15 @@ router.post("/", verifyToken, validatePlant, createPlant);
  *           schema:
  *             type: object
  *             properties:
- *              user_id:
- *               type: number
+ *               user_id:
+ *                 type: number
  *               name:
  *                 type: string
- *              species: 
- *                type: string
+ *               species: 
+ *                 type: string
  *     responses:
  *       200:
- *         description: Succesfully the plant
+ *         description: Successfully updated the plant
  */
 router.put("/:id", verifyToken, validatePlant, updatePlant);
 

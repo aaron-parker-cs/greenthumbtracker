@@ -25,7 +25,7 @@ export const validatePlant = (req: Request, res: Response, next: NextFunction): 
         }
         // Ensure that the plant exists in the database and belongs to the user
         const q = "SELECT * FROM plants WHERE id = ? AND user_id = ?";
-        db.query(q, [plant_id], (err: any, data: any) => {
+        db.query(q, [plant_id, user_id], (err: any, data: any) => {
             if (err) return res.json(err);
             if (Array.isArray(data) && data.length === 0) return res.status(404).json(`Plant with ID ${plant_id} not found or does not belong to you!`);
         });
