@@ -12,6 +12,8 @@ MYSQL_DATABASE=GreenThumbDB_dev
 MYSQL_HOST=db.greenthumbtracker.org
 
 PORT=8800
+
+JWT_SECRET=insert secret here # THIS IS NOT NECESSARY FOR DEVELOPMENT, can be ignored
 ```
 
 Next, you will need two terminal windows. This can easily be done in VS Code. Simply open a terminal in each folder, backend, and frontend, and run `npm start` in each and that's it!
