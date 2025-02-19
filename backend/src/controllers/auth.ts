@@ -52,7 +52,7 @@ export const login = (req: Request, res: Response) => {
         if (!validPassword) return res.status(400).json("Username or password incorrect!");
 
         const jwtSecret = process.env.JWT_SECRET || "jwtSecret";
-        const token = jwt.sign({ id: user.id }, jwtSecret, {expiresIn: '1h'}); // TODO -- move secret to .env
+        const token = jwt.sign({ id: user.id }, jwtSecret); // TODO -- consider using a refresh token
 
         const { password, ...other } = user;
 
