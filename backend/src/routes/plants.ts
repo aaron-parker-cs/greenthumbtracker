@@ -32,8 +32,12 @@ router.get("/", verifyToken, getPlants);
  *           schema:
  *             type: object
  *             properties:
+ *               user_id:
+ *                  type: number
  *               name:
  *                 type: string
+ *              species: 
+ *                type: string
  *     responses:
  *       201:
  *         description: Created a new plant
@@ -61,8 +65,12 @@ router.post("/", verifyToken, validatePlant, createPlant);
  *           schema:
  *             type: object
  *             properties:
+ *              user_id:
+ *               type: number
  *               name:
  *                 type: string
+ *              species: 
+ *                type: string
  *     responses:
  *       200:
  *         description: Succesfully the plant
