@@ -28,6 +28,7 @@ export const updatePlant = (req: Request, res: Response) => {
     const values = [user_id, name, species, id];
     db.query(q, values, (err, data) => {
         if (err) return res.status(500).json({ error: err.message });
+
         res.status(200).json({ message: "Plant updated successfully!" });
     });
 }
