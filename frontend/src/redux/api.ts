@@ -9,6 +9,7 @@ export const api = createApi({
         baseUrl: baseUrl,
         credentials: 'include',
     }),
+    tagTypes: ['Plants'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (credentials) => ({
@@ -35,6 +36,7 @@ export const api = createApi({
         }),
         getPlants: builder.query({
             query: () => '/plants',
+            providesTags: ['Plants'],
         }),
         getPlantById: builder.query({
             query: (id) => `/plants/${id}`,
@@ -45,6 +47,7 @@ export const api = createApi({
                 method: 'POST',
                 body: newPlant,
             }),
+            invalidatesTags: ['Plants'],
         }),
         updatePlant: builder.mutation({
             query: ({ id, ...updatedPlant }) => ({
@@ -52,12 +55,14 @@ export const api = createApi({
                 method: 'PUT',
                 body: updatedPlant,
             }),
+            invalidatesTags: ['Plants'],
         }),
         deletePlant: builder.mutation({
             query: (id) => ({
                 url: `/plants/${id}`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Plants'],
         }),
     }),
 });
