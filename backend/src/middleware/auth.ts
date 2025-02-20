@@ -1,4 +1,39 @@
+import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+
+declare global {
+    namespace Express {
+        interface Request {
+            userId?: { id: number };
+        }
+    }
+}
+
+export const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      // 1. Get token from cookies
+      const token = req.cookies.access_token;
+      if (!token) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+      }
+  
+      // 2. Verify the token
+      const jwtSecret = process.env.JWT_SECRET || "jwtSecret";
+      const decoded = jwt.verify(token, jwtSecret as string) as jwt.JwtPayload;
+  
+      // 3. Attach the userId (or entire decoded payload) to req so other routes can access it
+      req.userId = decoded.id;
+  
+      // 4. Continue to the next middleware or route
+      next();
+
+    } catch (err) {
+      console.error('Token verification failed:', err);
+      res.status(403).json({ message: 'Forbidden - Invalid token' });
+      return;
+    }
+};
 
 export const validateRegister = (req: Request, res: Response, next: NextFunction): void => {
     const { username, email, password } = req.body;
@@ -38,3 +73,4 @@ export const validateRegister = (req: Request, res: Response, next: NextFunction
     // All validations passed, proceed to the next middleware or controller
     next();
 };
+
