@@ -7,6 +7,15 @@ import {
   MDBCardText,
   MDBCardTitle,
 } from "mdb-react-ui-kit";
+import {
+  Box,
+  Drawer,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
+import { useState } from 'react';
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
@@ -18,25 +27,31 @@ const Home = () => {
     return <Navigate to="/login" />;
   }
 
+  const [open, setOpen] = useState(false);
+  const flowers = ["Rose", "Tulip", "Lily", "Daisy", "Sunflower", "Orchid", "Marigold", "Lavender", "Peony", "Chrysanthemum"];
+
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
+
+  const DrawerList = (
+    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+      <List>
+        {flowers.map((flower, index) => (
+          <ListItem key={flower} disablePadding>
+            <ListItemText primary={flower} />
+          </ListItem>
+        ))};
+      </List>
+    </Box>
+  );
+
   return (
-    <MDBContainer className="mt-5">
-      <MDBRow>
-        <MDBCol md="12">
-          <MDBCard>
-            <MDBCardBody>
-              <MDBCardTitle>Welcome, {user.username}!</MDBCardTitle>
-              <MDBCardText>
-                We're glad to have you back. Here's what's happening today:
-              </MDBCardText>
-              <ul>
-                <li>Check your plant's water levels</li>
-                <li>Review your garden's growth progress</li>
-                <li>Explore new gardening tips</li>
-              </ul>
-            </MDBCardBody>
-          </MDBCard>
-        </MDBCol>
-      </MDBRow>
+    <MDBContainer>
+      <Button onClick={toggleDrawer(true)}>Open Drawer</Button>
+      <Drawer open={open} onClose={toggleDrawer(false)}>
+        {DrawerList}
+      </Drawer>
     </MDBContainer>
   );
 };
