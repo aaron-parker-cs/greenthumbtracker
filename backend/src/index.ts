@@ -11,8 +11,17 @@ import plantRoutes from './routes/plants';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import { specs } from './config/swagger';
+import cors from 'cors';
 
 const app = express();
+
+// Cors to allow requests from the frontend
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+        credentials: true,
+    })
+)
 
 // Middleware to parse Cookies
 app.use(cookieParser());

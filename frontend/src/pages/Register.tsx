@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Form, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
+import { api } from "../redux/api";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const Register = () => {
   const [inputs, setInputs] = useState({
@@ -11,29 +12,32 @@ const Register = () => {
     password: "",
   });
   const [error, setError] = useState("");
+  const [register, { isLoading, isError, error: registerError }] =
+    api.useRegisterMutation();
 
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      await axios.post("/api/auth/register", inputs);
-      navigate("/login");
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        const errorMessage =
-          typeof err.response.data === "string"
-            ? err.response.data
-            : err.response.data.message;
-        setError(errorMessage);
+  useEffect(() => {
+    if (isError) {
+      if ("data" in registerError) {
+        const errorData = registerError as FetchBaseQueryError & {
+          data: { message: string };
+        };
+        setError(errorData.data.message || "An unexpected error occurred");
       } else {
         setError("An unexpected error occurred");
       }
     }
+  }, [isError, registerError]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await register(inputs).unwrap();
+    navigate("/");
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputs((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
   return (
@@ -68,7 +72,7 @@ const Register = () => {
           </Form.Group>
 
           <Button type="submit" className="mb-4 w-100">
-            Register
+            Register {isLoading && <Spinner animation="border" size="sm" />}
           </Button>
 
           <Form.Group className="mb-4 text-center">
