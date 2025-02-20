@@ -15,7 +15,8 @@ const AppNavbar = () => {
   };
 
   return (
-    <Navbar bg="success" variant="dark" expand="lg">
+    <Navbar bg="success" variant="dark" expand="lg"
+      style={{position: "fixed", top: "0", width: "100%"}}>
       <Container>
         <Navbar.Brand as={Link} to="/">
           GreenThumb Tracker
