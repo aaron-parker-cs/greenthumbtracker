@@ -6,7 +6,7 @@ import { logout } from "../../redux/user/slice";
 
 const AppNavbar = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state: any) => state.user);
 
   const handleLogout = async () => {
     // Call the logout REST api endpoint and clear the user state

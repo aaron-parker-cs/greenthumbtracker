@@ -22,7 +22,7 @@ const Home = () => {
     return <Navigate to="/login" />;
   }
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // used for side nav bar
   const flowers = ["Dashboard", "Rose", "Tulip", "Lily", "Daisy", "Sunflower", "Orchid", "Marigold", "Lavender", "Peony", "Chrysanthemum",
     "Rose", "Tulip", "Lily", "Daisy", "Sunflower", "Orchid", "Marigold", "Lavender", "Peony"
   ];
@@ -45,13 +45,56 @@ const Home = () => {
     </Container>
   );
 
-  const chartList = ["this", "is", "testing", "the", "charts", "heeheeheehoo"];
-
-  // d-flex flex-wrap
+  // Dummy info for visuals, replace with functioning GET data
+  const chartHeaders = ["Water Levels", "Sunlight", "Plant Height", "Soil Nutrients"];
+  const data = [
+    {
+      name: 'Page A',
+      uv: 4000,
+      pv: 2400,
+      amt: 2400,
+    },
+    {
+      name: 'Page B',
+      uv: 3000,
+      pv: 1398,
+      amt: 2210,
+    },
+    {
+      name: 'Page C',
+      uv: 2000,
+      pv: 9800,
+      amt: 2290,
+    },
+    {
+      name: 'Page D',
+      uv: 2780,
+      pv: 3908,
+      amt: 2000,
+    },
+    {
+      name: 'Page E',
+      uv: 1890,
+      pv: 4800,
+      amt: 2181,
+    },
+    {
+      name: 'Page F',
+      uv: 2390,
+      pv: 3800,
+      amt: 2500,
+    },
+    {
+      name: 'Page G',
+      uv: 3490,
+      pv: 4300,
+      amt: 2100,
+    },
+  ];
 
   return (
     <Container fluid className="pt-3"
-      style={{border: "2px solid red", marginBottom: "82px", marginTop: "56px"}}> {/* bottom margin to keep from going under footer */}
+      style={{marginBottom: "82px", marginTop: "56px"}}> {/* bottom margin to keep from going under footer */}
       <Button variant="success" onClick={toggleDrawer(true)}
         style={{position: "fixed"}}>
         <i class="bi bi-chevron-double-right"></i>
@@ -60,8 +103,8 @@ const Home = () => {
         {DrawerList}
       </Drawer>
       <Container fluid className="d-inline-flex flex-wrap justify-content-around">
-        {chartList.map((chartText, index) => (
-          <Chart text={chartText} />
+        {chartHeaders.map((header, index) => (
+          <Chart header={header} data={data}/>
         ))}
       </Container>
 
