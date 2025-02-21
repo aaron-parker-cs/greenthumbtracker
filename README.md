@@ -2,6 +2,9 @@
 
 First, make sure that you have your .env file set up in the backend/.env. It should look something like:
 
+> [!CAUTION]
+> **Never commit your passwords**, this file should be ignored by git by default.
+
 ```
 MYSQL_USERNAME=your sql username
 
@@ -15,10 +18,9 @@ PORT=8800
 
 JWT_SECRET=insert secret here # THIS IS NOT NECESSARY FOR DEVELOPMENT, can be ignored
 ```
-> ⚠️ **This is very important**, your code will not work without this file being set up.
+> [!WARNING]
+> **This is very important**, your code will not work without this file being set up.
 
-
-> ⚠️ **Never commit your passwords**, this file should be ignored by git by default.
 
 Next, you will need two terminal windows. This can easily be done in VS Code. Simply open a terminal in each folder, backend, and frontend, and run `npm start` in each and that's it!
 
