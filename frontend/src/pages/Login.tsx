@@ -1,10 +1,11 @@
-import axios from "axios";
-import { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Form, Spinner } from "react-bootstrap";
 import { useDispatch } from "react-redux";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../redux/user/slice";
 import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
+import { api } from "../redux/api";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -13,8 +14,23 @@ const Login = () => {
     password: "",
   });
   const [error, setError] = useState("");
+  const [loginUser, { isLoading, isError, error: loginError }] =
+    api.useLoginMutation();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isError) {
+      if ("data" in loginError) {
+        const errorData = loginError as FetchBaseQueryError & {
+          data: { message: string };
+        };
+        setError(errorData.data.message || "An unexpected error occurred");
+      } else {
+        setError("An unexpected error occurred");
+      }
+    }
+  }, [isError, loginError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputs((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -22,21 +38,9 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const res = await axios.post("/api/auth/login", inputs);
-      dispatch(login(res.data));
-      navigate("/");
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        const errorMessage =
-          typeof err.response.data === "string"
-            ? err.response.data
-            : err.response.data.message;
-        setError(errorMessage);
-      } else {
-        setError("An unexpected error occurred");
-      }
-    }
+    const res = await loginUser(inputs).unwrap();
+    dispatch(login(res));
+    navigate("/");
   };
 
   return (
@@ -63,7 +67,7 @@ const Login = () => {
           </Form.Group>
 
           <Button type="submit" className="mb-4 w-100">
-            Sign In
+            Sign In {isLoading && <Spinner animation="border" size="sm" />}
           </Button>
 
           <Form.Group className="mb-4 text-center">

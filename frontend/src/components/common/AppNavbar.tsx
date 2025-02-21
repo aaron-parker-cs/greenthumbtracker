@@ -1,17 +1,18 @@
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { logout } from "../../redux/user/slice";
+import { logout, UserState } from "../../redux/user/slice";
+import { api } from "../../redux/api";
 
 const AppNavbar = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: { user: UserState }) => state.user);
+  const [logoutUser] = api.useLogoutMutation();
 
   const handleLogout = async () => {
     // Call the logout REST api endpoint and clear the user state
-    await axios.post("/api/auth/logout");
-    dispatch(logout(user));
+    await logoutUser(user);
+    dispatch(logout());
   };
 
   return (
