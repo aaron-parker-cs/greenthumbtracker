@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { db } from '../db/db'; 
+import { pool } from '../db/db'; 
 
 export const validatePlant = (req: Request, res: Response, next: NextFunction): void => {
     const plant_id = parseInt(req.params.id, 10) || null;
@@ -25,7 +25,7 @@ export const validatePlant = (req: Request, res: Response, next: NextFunction): 
         }
         // Ensure that the plant exists in the database and belongs to the user
         const q = "SELECT * FROM plants WHERE id = ? AND user_id = ?";
-        db.query(q, [plant_id, user_id], (err: any, data: any) => {
+        pool.query(q, [plant_id, user_id], (err: any, data: any) => {
             if (err) return res.json(err);
             if (Array.isArray(data) && data.length === 0) return res.status(404).json(`Plant with ID ${plant_id} not found or does not belong to you!`);
         });
@@ -33,7 +33,7 @@ export const validatePlant = (req: Request, res: Response, next: NextFunction): 
 
     // Ensure the user exists in the database
     const q = "SELECT * FROM users WHERE id = ?";
-    db.query(q, [user_id], (err: any, data: any) => {
+    pool.query(q, [user_id], (err: any, data: any) => {
         if (err) return res.json(err);
         if (Array.isArray(data) && data.length === 0) return res.status(404).json(`User with ID ${user_id} not found!`);
     });
