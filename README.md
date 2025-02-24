@@ -30,7 +30,7 @@ Thanks to nodemon and react, any changes you make in either side will reflect im
 
 Setting up a connection in MySQL Workbench is fairly easy. Download the community edition: https://dev.mysql.com/downloads/workbench/, then open it. You should see "MySQL Connections" if it doesn't prompt you to create a connection.
 
-> [!CAUTION]
+> [!WARNING]
 > The port used for MySQL is NOT the same as the ports for backend or frontend. That's because these are all three separate applications and each require a unique port as a result.
 
 1. First, click on create a new connection
