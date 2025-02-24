@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logout } from './user/slice';
 
-const baseUrl = 'http://localhost:8800/api';
+const port = import.meta.env.API_PORT || 8800;
+const baseUrl = `http://localhost:${port}/api`;
 
 export const api = createApi({
     reducerPath: 'api',
