@@ -26,6 +26,20 @@ Next, you will need two terminal windows. This can easily be done in VS Code. Si
 
 Thanks to nodemon and react, any changes you make in either side will reflect immediately to your development environment. To see the webpage, open the result from frontend, it should look something like http://localhost:5173.
 
+# How do I connect to the database using MySQL Workbench?
+
+Setting up a connection in MySQL Workbench is fairly easy. Download the community edition: https://dev.mysql.com/downloads/workbench/, then open it. You should see "MySQL Connections" if it doesn't prompt you to create a connection.
+
+> [!CAUTION]
+> The port used for MySQL is NOT the same as the ports for backend or frontend. That's because these are all three separate applications and each require a unique port as a result.
+
+1. First, click on create a new connection
+2. Next, fill in the connection name as whatever you want
+3. Ensure the connection method is set to Standard (TCP/IP)
+4. Fill in the hostname, this is `db.greenthumbtracker.org`. The port should be `3306`, if either of these values are different, the connection will fail.
+5. Fill in your username
+6. Click `Test Connection`, You will be prompted to fill in your password. This is OK to save in the vault.
+
 # That's cool, but how do I commit my changes?
 
 We're going to be making the repository public to enforce branch rules. This means that repository admins will be able to commit directly to the "main" branch, but for every other contributer, they will have to make a branch.
