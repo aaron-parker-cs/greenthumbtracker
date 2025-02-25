@@ -1,5 +1,10 @@
 import express from "express";
-import { createPlant, deletePlant, getPlants, updatePlant } from "../controllers/plants";
+import {
+  createPlant,
+  deletePlant,
+  getPlants,
+  updatePlant,
+} from "../controllers/plants";
 import { validatePlant } from "../middleware/plants";
 import { verifyToken } from "../middleware/auth";
 
@@ -36,7 +41,7 @@ router.get("/", verifyToken, getPlants);
  *                 type: number
  *               name:
  *                 type: string
- *               species: 
+ *               species:
  *                 type: string
  *     responses:
  *       201:
@@ -69,7 +74,7 @@ router.post("/", verifyToken, validatePlant, createPlant);
  *                 type: number
  *               name:
  *                 type: string
- *               species: 
+ *               species:
  *                 type: string
  *     responses:
  *       200:
