@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { pool } from '../db/db'; 
+import { PlantRepository } from '../db/repositories/plant.repository';
+import { UserRepository } from '../db/repositories/user.repository';
+
+const plantRepo = new PlantRepository();
+const userRepository = new UserRepository();
 
 export const validatePlant = (req: Request, res: Response, next: NextFunction): void => {
     const plant_id = parseInt(req.params.id, 10) || null;
@@ -24,19 +28,36 @@ export const validatePlant = (req: Request, res: Response, next: NextFunction): 
             return;
         }
         // Ensure that the plant exists in the database and belongs to the user
-        const q = "SELECT * FROM plants WHERE id = ? AND user_id = ?";
-        pool.query(q, [plant_id, user_id], (err: any, data: any) => {
-            if (err) return res.json(err);
-            if (Array.isArray(data) && data.length === 0) return res.status(404).json(`Plant with ID ${plant_id} not found or does not belong to you!`);
+        plantRepo.findPlantById(plant_id).then((plant) => {
+            if (!plant) {
+                res.status(404).json({ message: "Plant not found." });
+                return;
+            }
+            if (plant.user.id !== user_id) {
+                res.status(403).json({ message: "You do not have permission to update this plant." });
+                return;
+            }
+            return;
+        }).catch((err) => {
+            res.status(500).json({ message: "Internal server error." });
         });
     }
 
     // Ensure the user exists in the database
-    const q = "SELECT * FROM users WHERE id = ?";
-    pool.query(q, [user_id], (err: any, data: any) => {
-        if (err) return res.json(err);
-        if (Array.isArray(data) && data.length === 0) return res.status(404).json(`User with ID ${user_id} not found!`);
+    const user = userRepository.findUserById(user_id).then((user) => {
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+        return;
+    }).catch((err) => {
+        res.status(500).json({ message: "Internal server error." });
+        return;
     });
+
+    if (res.statusCode === 400 || res.statusCode === 404 || res.statusCode === 403 || res.statusCode === 500) {
+        return;
+    }
 
     // Validate name
     if (name.length < 3) {

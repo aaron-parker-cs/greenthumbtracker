@@ -3,7 +3,14 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const db = require('./db/db');
+import { AppDataSource } from './db/db';
+
+AppDataSource.initialize().then(() => {
+    console.log('Database connected');
+}).catch((err) => {
+    console.error('Error connecting to the database: ', err);
+    process.exit(1);
+});
 
 import express from 'express';
 import authRoutes from './routes/auth';

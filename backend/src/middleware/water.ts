@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { db } from "../db/db";
+// import { db } from "../db/db";
 
 export const validateWater = (
   req: Request,
@@ -25,13 +25,14 @@ export const validateWater = (
   }
 
   // Check if plant exists in the database
+  /*
   const q = "SELECT * FROM plants WHERE id = ?";
   db.query(q, [plantId], (err: any, data: any) => {
     if (err) return res.json(err);
     if (Array.isArray(data) && data.length === 0)
       return res.status(404).json(`Plant with ID ${plantId} not found!`);
   });
-
+*/
   // Sanity check the date (can't be in the future, or more than 1 year in the past)
   if (waterDate) {
     const date = new Date(waterDate);

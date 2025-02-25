@@ -1,75 +1,97 @@
-import { pool } from "../db/db";
 import { Request, Response } from "express";
-import bcrpt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { userRepository } from "../db/repositories/user.repository";
 
-export const register = (req: Request, res: Response): void => {
-
-    const q = "SELECT * FROM users WHERE email = ? OR username = ?";
-
-    if(!req.body)
-    {
-        res.status(500).json({ message: "Empty request!" });
+/**
+ * Register a new user
+ */
+export const register = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      res.status(400).json({ message: "Missing username, email, or password" });
+      return;
     }
 
-    pool.query(q, [req.body.email, req.body.username], (err, data) => {
-        if (err) return res.json(err);
-        if (Array.isArray(data) && data.length > 0) return res.status(409).json("User already exists!");
+    // Check if user already exists
+    const existingUser = await userRepository.findOneByEmailOrUsername(
+      email,
+      username
+    );
+    if (existingUser) {
+      res.status(409).json("User already exists!");
+      return;
+    }
 
-        // Hash + salt password, essential for security
-        const salt = bcrpt.genSaltSync(10);
-        const hashedPassword = bcrpt.hashSync(req.body.password, salt);
+    // Hash & salt the password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
 
-        const q = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-        const values = [
-            req.body.username,
-            req.body.email,
-            hashedPassword
-        ];
+    // Create and save the new user in DB
+    await userRepository.createUser(username, email, hashedPassword);
 
-        pool.query(q, values, (err, data) => {
-            if (err) return res.json(err);
-            res.status(200).json("User has been created.");
-        });
-    });
-}
+    res.status(200).json("User has been created.");
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+};
 
-export const login = (req: Request, res: Response) => {
+/**
+ * Login an existing user
+ */
+export const login = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      res.status(400).json("Username or password missing!");
+      return;
+    }
 
-    // Check if the user exists
+    // Find user by username
+    const user = await userRepository.findUserByUsername(username);
+    if (!user) {
+      res.status(404).json("Username or password incorrect!");
+      return;
+    }
 
-    const q = "SELECT * FROM users WHERE username = ?";
+    // Compare stored password with provided password
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (!isPasswordValid) {
+      console.log("Password incorrect");
+      res.status(400).json("Username or password incorrect!");
+      return;
+    }
 
-    pool.query(q, [req.body.username], (err, data) => {
-        if (err) return res.json(err);
-        console.log(data);
-        if (Array.isArray(data) && data.length === 0) return res.status(404).json("Username or password incorrect!");
+    // Generate JWT
+    const jwtSecret = process.env.JWT_SECRET || "jwtSecret";
+    const token = jwt.sign({ id: user.id }, jwtSecret);
 
-        // Check if the password is correct
-        const user = (data as any[])[0];
-        const validPassword = bcrpt.compareSync(req.body.password, user.password);
+    // Remove password from the response
+    const { password: _, ...userData } = user;
 
-        if (!validPassword) return res.status(400).json("Username or password incorrect!");
-
-        const jwtSecret = process.env.JWT_SECRET || "jwtSecret";
-        const token = jwt.sign({ id: user.id }, jwtSecret); // TODO -- consider using a refresh token
-
-        const { password, ...other } = user;
-
-        res.cookie("access_token", token, {
-            httpOnly: true, })
-        .status(200)
-        .json(user);
-    });
-
-}
-
-export const logout = (req: Request, res: Response) => {
+    // Set the cookie and respond
     res
-        .clearCookie("access_token", {
-            sameSite: "none",
-            secure: true,
-        })
-        .status(200)
-        .json("User has been logged out.");
-}
+      .cookie("access_token", token, {
+        httpOnly: true,
+        // sameSite, secure, etc., as needed
+      })
+      .status(200)
+      .json(userData);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+};
+
+/**
+ * Logout the user by clearing the cookie
+ */
+export const logout = (req: Request, res: Response): void => {
+  res
+    .clearCookie("access_token", {
+      sameSite: "none",
+      secure: true,
+    })
+    .status(200)
+    .json("User has been logged out.");
+};
