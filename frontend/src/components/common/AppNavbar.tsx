@@ -16,10 +16,14 @@ const AppNavbar = () => {
   };
 
   return (
-    <Navbar bg="success" variant="dark" expand="lg"
-      style={{position: "fixed", top: "0", width: "100%"}}>
-      <Container>
-        <Navbar.Brand as={Link} to="/">
+    <Navbar
+      bg="success"
+      variant="dark"
+      expand="lg"
+      style={{ position: "fixed", top: "0", width: "100%" }}
+    >
+      <Container className="d-flex">
+        <Navbar.Brand as={Link} to="/" className="me-auto">
           GreenThumb Tracker
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

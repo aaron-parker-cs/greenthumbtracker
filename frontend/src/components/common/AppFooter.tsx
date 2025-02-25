@@ -1,7 +1,5 @@
 const AppFooter = () => {
-  return (
-    <></>
-  );
+  return <></>;
 };
 
 export default AppFooter;
