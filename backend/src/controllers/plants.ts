@@ -2,8 +2,8 @@ import { pool } from "../db/db";
 import { Request, Response } from "express";
 
 export const getPlants = (req: Request, res: Response) => {
-    const q = "SELECT * FROM plants";
-    pool.query(q, (err, data) => {
+    const q = "SELECT * FROM plants WHERE user_id = ?";
+    db.query(q, req.userId, (err, data) => {
         if (err) return res.status(500).json({ error: err.message });
         res.send(data);
     });
