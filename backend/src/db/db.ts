@@ -16,6 +16,13 @@ if (
   process.exit(1);
 }
 
+// Sync schema to the database, only used for development, default is true if not provided
+const sync =
+  process.env.ENVIROMENT === "development" ||
+  process.env.TYPEORM_SYNCRHONIZE === "true";
+
+console.log("Syncing schema to the database: ", sync);
+
 export const AppDataSource = new DataSource({
   type: "mysql",
   host: process.env.MYSQL_HOST,
@@ -23,7 +30,7 @@ export const AppDataSource = new DataSource({
   username: process.env.MYSQL_USERNAME,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-  synchronize: true, // This will sync schema to the ./entities, only used for development
+  synchronize: sync, // This will sync schema to the ./entities, only used for development
   logging: false,
   entities: [join(__dirname, "entities", "**", "*.{ts,js}")],
   migrations: [
@@ -32,6 +39,12 @@ export const AppDataSource = new DataSource({
     // For prod
     // join(__dirname, "..", "migrations", "**", "*.{js}")
   ],
+
+  /* Optional, comment in if you run into issues
+  extra: {
+    connectionLimit: 10, // Default is 10, max number of connections in the pool
+    connectTimeout: 10000, // Default is 10000, connection timeout in ms
+  }, */
 });
 
 /*

@@ -11,7 +11,7 @@ const AppNavbar = () => {
 
   const handleLogout = async () => {
     // Call the logout REST api endpoint and clear the user state
-    await logoutUser(user);
+    await logoutUser();
     dispatch(logout());
   };
 
@@ -20,17 +20,34 @@ const AppNavbar = () => {
       bg="success"
       variant="dark"
       expand="lg"
-      style={{ position: "fixed", top: "0", width: "100%" }}
+      className="py-2"
+      style={{
+        position: "fixed",
+        top: 0,
+        width: "100%",
+        zIndex: 1000,
+      }}
     >
-      <Container className="d-flex">
-        <Navbar.Brand as={Link} to="/" className="me-auto">
+      <Container fluid>
+        <Navbar.Brand as={Link} to="/" className="ms-3">
           GreenThumb Tracker
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
+
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="me-3" />
+
+        <Navbar.Collapse
+          id="basic-navbar-nav"
+          className="justify-content-end me-3"
+        >
+          <Nav>
             <Nav.Link as={Link} to="/">
               Home
+            </Nav.Link>
+            <Nav.Link as={Link} to="/plants">
+              Plants
+            </Nav.Link>
+            <Nav.Link as={Link} to="/records">
+              Records
             </Nav.Link>
             {user.isAuthenticated ? (
               <Nav.Link as={Link} onClick={handleLogout} to="/login">

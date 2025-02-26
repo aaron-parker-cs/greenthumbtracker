@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { userRepository } from "../db/repositories/user.repository";
+import { AppDataSource } from "../db/db";
+import { User } from "../db/entities/user";
 
 /**
  * Register a new user
@@ -49,7 +51,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Find user by username
-    const user = await userRepository.findUserByUsername(username);
+    // user.password is not selected by default, so we grab a repo from the datasource and build a query here
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository
+      .createQueryBuilder("user")
+      .addSelect("user.password")
+      .where("user.username = :username", { username })
+      .getOne();
     if (!user) {
       res.status(404).json("Username or password incorrect!");
       return;

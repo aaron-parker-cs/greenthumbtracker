@@ -4,13 +4,19 @@
   "description": "",
   "main": "./src/index.ts",
   "scripts": {
-    "start": "nodemon ./src/index.ts"
+    "start": "nodemon ./src/index.ts",
+    "build": "tsc",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -- -n",
+    "typeorm:run": "typeorm-ts-node-commonjs migration:run",
+    "typeorm:revert": "typeorm-ts-node-commonjs migration:revert"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@typescript-eslint/parser": "^5.62.0",
+    "class-transformer": "^0.5.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "reflect-metadata": "^0.2.2",

@@ -34,7 +34,8 @@ export const createPlant = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { user_id, name, species } = req.body;
+    const { name, species } = req.body;
+    const user_id = req.userId;
     if (!user_id || !name || !species) {
       res
         .status(400)
@@ -60,8 +61,9 @@ export const updatePlant = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.params;
-    const { user_id, name, species } = req.body;
+    const id = req.params?.id;
+    const { name, species } = req.body;
+    const user_id = req.userId;
 
     if (!id) {
       res.status(400).json({ message: "No plant ID provided." });

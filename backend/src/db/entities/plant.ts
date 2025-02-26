@@ -1,20 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
-import { User } from './user';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Not,
+} from "typeorm";
+import { User } from "./user";
 
 @Entity()
 export class Plant {
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @ManyToOne(() => Plant, plant => plant.user)
-    user!: User;
+  @ManyToOne(() => User, (user) => user.plants, { eager: true }) // eager: true means that when we fetch a plant, we also fetch the user that owns it
+  user!: User;
 
-    @Column()
-    name!: string;
+  @Column()
+  name!: string;
 
-    @Column()
-    species!: string;
+  @Column()
+  species!: string;
 
-    @CreateDateColumn()
-    created_!: Date;
+  @CreateDateColumn()
+  created_!: Date;
+
+  @UpdateDateColumn()
+  updated_!: Date;
 }
