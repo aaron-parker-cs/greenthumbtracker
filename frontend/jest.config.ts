@@ -4,6 +4,12 @@
  */
 
 import type {Config} from 'jest';
+import { createDefaultPreset, JestConfigWithTsJest } from 'ts-jest';
+
+const jestConfig: JestConfigWithTsJest = {
+  // [...]
+  ...createDefaultPreset(),
+}
 
 const config: Config = {
   // All imported modules in your tests should be mocked automatically
