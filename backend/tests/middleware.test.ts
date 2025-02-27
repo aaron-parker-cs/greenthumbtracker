@@ -23,25 +23,30 @@ app.post('/register', validateRegister, (req: Request, res: Response) => {
 
 // validateRegister
 describe('Ensure validateRegister middleware works as expected', () => {
-
-    const data = {
-        username: '',
-        email: '',
-        password: '',
+    let data = {
+        username: 'validUsername',
+        email: 'valid@email.com',
+        password: 'validPassword',
     };
-    beforeEach(() => {
+
+    const initializeData = () => {
+        data.username = 'validUsername';
+        data.email = 'valid@email.com';
+        data.password = 'validPassword';
+    };
+
+    test('should return status 400 and related message if ANY fields are missing', async () => {
+        initializeData();
         data.username = '';
         data.email = '';
         data.password = '';
-    });
-
-    test('should return status 400 and related message if ALL fields are missing', async () => {
         const response = await request(app).post('/register').send(data);
         expect(response.status).toBe(400);
         expect(response.body).toEqual({message: 'Please fill in all fields.'});
     });
 
     test('username should be at least 3 characters', async () => {
+        initializeData();
         data.username = 'a';
         const response = await request(app).post('/register').send(data);
         expect(response.status).toBe(400);
@@ -49,6 +54,7 @@ describe('Ensure validateRegister middleware works as expected', () => {
     });
 
     test('username should be at most 100 characters', async () => {
+        initializeData();
         data.username = 'a'.repeat(101);
         const response = await request(app).post('/register').send(data);
         expect(response.status).toBe(400);
@@ -56,6 +62,7 @@ describe('Ensure validateRegister middleware works as expected', () => {
     });
 
     test('password should be at least 8 characters', async () => {
+        initializeData();
         data.password = 'a';
         const response = await request(app).post('/register').send(data);
         expect(response.status).toBe(400);
@@ -63,6 +70,7 @@ describe('Ensure validateRegister middleware works as expected', () => {
     });
 
     test('password should be at most 100 characters', async () => {
+        initializeData();
         data.password = 'a'.repeat(101);
         const response = await request(app).post('/register').send(data);
         expect(response.status).toBe(400);
@@ -70,13 +78,15 @@ describe('Ensure validateRegister middleware works as expected', () => {
     });
 
     test('email should be at most 100 characters', async () => {
+        initializeData();
         data.email = 'a'.repeat(101) + '@gmail.com';
         const response = await request(app).post('/register').send(data);
         expect(response.status).toBe(400);
-        expect(response.body).toEqual({message: 'Email is too long, limit of 100 characters.'});
+        expect(response.body).toEqual({message: 'Email address is too long, limit of 100 characters.'});
     });
 
     test('email should be valid including @ and .', async () => {
+        initializeData();
         data.email = 'invalidEmail';
         const response = await request(app).post('/register').send(data);
         expect(response.status).toBe(400);
@@ -84,6 +94,7 @@ describe('Ensure validateRegister middleware works as expected', () => {
     });
 
     test('should return status 201 with valid user', async () => {
+        initializeData();
         data.username = 'validUser';
         data.email = 'valid@email.com';
         data.password = 'validPassword';
