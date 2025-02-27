@@ -1,20 +1,19 @@
 import { Request, Response, NextFunction } from "express";
-// import { db } from "../db/db";
-
+import { plantRepository } from "../db/repositories/plant.repository";
 export const validateWater = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
   // Check if all fields are provided, water date may be null for current timestamp
-  const { plantId, waterAmount, waterDate } = req.body;
+  const { waterAmount, waterDate } = req.body;
+  const plantId = Number(req.params.plantId);
+  console.log(req.body);
   if (!plantId || !waterAmount) {
-    res
-      .status(400)
-      .json({
-        message:
-          "There was an error processing your request, please ensure you fill out all fields.",
-      });
+    res.status(400).json({
+      message:
+        "There was an error processing your request, please ensure you fill out all fields.",
+    });
     return;
   }
 
@@ -25,14 +24,12 @@ export const validateWater = (
   }
 
   // Check if plant exists in the database
-  /*
-  const q = "SELECT * FROM plants WHERE id = ?";
-  db.query(q, [plantId], (err: any, data: any) => {
-    if (err) return res.json(err);
-    if (Array.isArray(data) && data.length === 0)
-      return res.status(404).json(`Plant with ID ${plantId} not found!`);
-  });
-*/
+  const plant = plantRepository.findPlantById(plantId);
+  if (!plant) {
+    res.status(400).json({ message: `Plant ${plantId} not found.` });
+    return;
+  }
+
   // Sanity check the date (can't be in the future, or more than 1 year in the past)
   if (waterDate) {
     const date = new Date(waterDate);
@@ -44,11 +41,9 @@ export const validateWater = (
       return;
     }
     if (date < oneYearAgo) {
-      res
-        .status(400)
-        .json({
-          message: "Water date cannot be more than 1 year in the past.",
-        });
+      res.status(400).json({
+        message: "Water date cannot be more than 1 year in the past.",
+      });
       return;
     }
   }

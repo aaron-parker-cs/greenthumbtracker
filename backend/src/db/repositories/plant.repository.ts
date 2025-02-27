@@ -69,4 +69,4 @@ export class PlantRepository {
   }
 }
 
-export const plantRepo = new PlantRepository();
+export const plantRepository = new PlantRepository();

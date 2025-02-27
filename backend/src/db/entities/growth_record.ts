@@ -13,7 +13,7 @@ export class GrowthRecord {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Plant, (plant) => plant.id)
+  @ManyToOne(() => Plant, (plant) => plant.id, { eager: true })
   plant!: Plant;
 
   @Column()

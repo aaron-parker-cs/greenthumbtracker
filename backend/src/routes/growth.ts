@@ -1,22 +1,22 @@
 import express from "express";
 import { verifyToken } from "../middleware/auth";
 import {
-  createWaterRecord,
-  deleteWaterRecord,
-  getWaterRecords,
-  updateWaterRecord,
-} from "../controllers/water";
-import { validateWater } from "../middleware/water";
+  createGrowthRecord,
+  deleteGrowthRecord,
+  getGrowthRecords,
+  updateGrowthRecord,
+} from "../controllers/growth";
+import { validateGrowth, validateDeleteGrowth } from "../middleware/growth";
 
 const router = express.Router();
 
 /**
  * @openapi
- * /water/{plantId}:
+ * /growth/{plantId}:
  *   get:
- *     summary: Retrieves a list of all water records for a plant
+ *     summary: Retrieves a list of all growth records for a plant
  *     tags:
- *       - Water Records
+ *       - Growth Records
  *     parameters:
  *       - in: path
  *         name: plantId
@@ -25,17 +25,17 @@ const router = express.Router();
  *           type: number
  *     responses:
  *       200:
- *         description: Returns an array of water record objects for a plant
+ *         description: Returns an array of growth record objects for a plant
  */
-router.get("/:plantId", verifyToken, getWaterRecords);
+router.get("/:plantId", verifyToken, getGrowthRecords);
 
 /**
  * @openapi
- * /water/{plantId}:
+ * /growth/{plantId}:
  *   post:
- *     summary: Create a new water record
+ *     summary: Create a new growth record
  *     tags:
- *       - Water Records
+ *       - Growth Records
  *     parameters:
  *       - in: path
  *         name: plantId
@@ -49,24 +49,24 @@ router.get("/:plantId", verifyToken, getWaterRecords);
  *           schema:
  *             type: object
  *             properties:
- *               waterAmount:
+ *               height:
  *                 type: number
- *               waterDate:
+ *               date:
  *                 type: string
  *                 format: date
  *     responses:
  *       201:
- *         description: Created a new plant
+ *         description: Created a new growth record
  */
-router.post("/:plantId", verifyToken, validateWater, createWaterRecord);
+router.post("/:plantId", verifyToken, validateGrowth, createGrowthRecord);
 
 /**
  * @openapi
- * /water/{plantId}/{id}:
+ * /growth/{plantId}/{id}:
  *   put:
- *     summary: Update a water record
+ *     summary: Update a growth record
  *     tags:
- *       - Water Records
+ *       - Growth Records
  *     parameters:
  *       - in: path
  *         name: plantId
@@ -85,24 +85,24 @@ router.post("/:plantId", verifyToken, validateWater, createWaterRecord);
  *           schema:
  *             type: object
  *             properties:
- *               waterAmount:
+ *               height:
  *                 type: number
- *               waterDate:
+ *               date:
  *                 type: string
  *                 format: date
  *     responses:
  *       200:
- *         description: Updated the plant
+ *         description: Updated the growth record
  */
-router.put("/:plantId/:id", verifyToken, validateWater, updateWaterRecord);
+router.put("/:plantId/:id", verifyToken, validateGrowth, updateGrowthRecord);
 
 /**
  * @openapi
- * /water/{plantId}/{id}:
+ * /growth/{plantId}/{id}:
  *   delete:
- *     summary: Delete a water record
+ *     summary: Delete a growth record
  *     tags:
- *       - Water Records
+ *       - Growth Records
  *     parameters:
  *       - in: path
  *         name: plantId
@@ -116,8 +116,13 @@ router.put("/:plantId/:id", verifyToken, validateWater, updateWaterRecord);
  *           type: number
  *     responses:
  *       200:
- *         description: Deleted the water record
+ *         description: Deleted the growth record
  */
-router.delete("/:plantId/:id", verifyToken, deleteWaterRecord);
+router.delete(
+  "/:plantId/:id",
+  verifyToken,
+  validateDeleteGrowth,
+  deleteGrowthRecord
+);
 
 export default router;

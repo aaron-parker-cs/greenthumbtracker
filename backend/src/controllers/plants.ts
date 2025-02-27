@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { plantRepo } from "../db/repositories/plant.repository";
+import { plantRepository } from "../db/repositories/plant.repository";
 
 /**
  * GET /plants
@@ -15,7 +15,7 @@ export const getPlants = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const plants = await plantRepo.findPlantsByUserId(userId);
+    const plants = await plantRepository.findPlantsByUserId(userId);
     res.status(200).json(plants);
     return;
   } catch (err) {
@@ -43,7 +43,7 @@ export const createPlant = async (
       return;
     }
 
-    await plantRepo.createPlant(user_id, name, species);
+    await plantRepository.createPlant(user_id, name, species);
     res.status(201).json({ message: "Plant created successfully!" });
     return;
   } catch (err) {
@@ -77,7 +77,7 @@ export const updatePlant = async (
     }
 
     const plantId = parseInt(id, 10);
-    await plantRepo.updatePlant(plantId, user_id, name, species);
+    await plantRepository.updatePlant(plantId, user_id, name, species);
 
     res.status(200).json({ message: "Plant updated successfully!" });
     return;
@@ -103,7 +103,7 @@ export const deletePlant = async (
     }
     const plantId = parseInt(id, 10);
 
-    await plantRepo.deletePlant(plantId);
+    await plantRepository.deletePlant(plantId);
 
     res.status(200).json({ message: "Plant deleted successfully!" });
     return;

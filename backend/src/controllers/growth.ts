@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { waterRepository } from "../db/repositories/water.repository";
+import { growthRepository } from "../db/repositories/growth.repository";
 
-export const getWaterRecords = async (req: Request, res: Response) => {
+export const getGrowthRecords = async (req: Request, res: Response) => {
   const plantId = req.params.plantId;
   try {
     const userId = (req as any).userId;
@@ -11,7 +11,7 @@ export const getWaterRecords = async (req: Request, res: Response) => {
       return;
     }
 
-    const records = await waterRepository.findWaterRecordsByPlantId(
+    const records = await growthRepository.findGrowthRecordsByPlantId(
       Number(plantId)
     );
     res.status(200).json(records);
@@ -22,9 +22,9 @@ export const getWaterRecords = async (req: Request, res: Response) => {
   }
 };
 
-export const createWaterRecord = async (req: Request, res: Response) => {
+export const createGrowthRecord = async (req: Request, res: Response) => {
+  const { height, date } = req.body;
   const plantId = Number(req.params.plantId);
-  const { waterAmount, waterDate } = req.body;
   try {
     const userId = (req as any).userId;
 
@@ -33,12 +33,12 @@ export const createWaterRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    const record = await waterRepository.createWaterRecord(
+    const record = await growthRepository.createGrowthRecord(
       plantId,
-      waterDate,
-      waterAmount
+      date,
+      height
     );
-    res.status(200).json({ message: "Water Record created successfully" });
+    res.status(200).json({ message: "Growth Record created successfully" });
     return;
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -46,10 +46,10 @@ export const createWaterRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const updateWaterRecord = async (req: Request, res: Response) => {
+export const updateGrowthRecord = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const plantId = Number(req.params.plantId);
-  const { waterAmount, waterDate } = req.body;
+  const { height, date } = req.body;
   try {
     const userId = (req as any).userId;
 
@@ -58,13 +58,13 @@ export const updateWaterRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    const record = await waterRepository.updateWaterRecord(
+    const record = await growthRepository.updateGrowthRecord(
       id,
       plantId,
-      waterDate,
-      waterAmount
+      date,
+      height
     );
-    res.status(200).json({ message: "Water Record updated successfully" });
+    res.status(200).json({ message: "Growth Record updated successfully" });
     return;
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -72,7 +72,7 @@ export const updateWaterRecord = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteWaterRecord = (req: Request, res: Response) => {
+export const deleteGrowthRecord = (req: Request, res: Response) => {
   const id = req.params.id;
   try {
     const userId = (req as any).userId;
@@ -82,8 +82,8 @@ export const deleteWaterRecord = (req: Request, res: Response) => {
       return;
     }
 
-    const record = waterRepository.deleteWaterRecord(Number(id));
-    res.status(200).json({ message: "Water Record deleted successfully" });
+    const record = growthRepository.deleteGrowthRecord(Number(id));
+    res.status(200).json({ message: "Growth Record deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
     return;

@@ -13,7 +13,7 @@ export class WaterRecord {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Plant, (plant: Plant) => plant.id)
+  @ManyToOne(() => Plant, (plant: Plant) => plant.id, { eager: true })
   plant!: Plant;
 
   @Column()
