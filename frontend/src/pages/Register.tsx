@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
 import { api } from "../redux/api";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { Credential } from "../models/credential";
 
 const Register = () => {
   const [inputs, setInputs] = useState({
@@ -32,7 +33,10 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await register(inputs).unwrap();
+    const credentials: Credential = {
+      ...inputs,
+    };
+    await register(credentials).unwrap();
     navigate("/");
   };
 

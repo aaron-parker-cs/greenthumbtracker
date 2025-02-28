@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { login } from "../redux/user/slice";
 import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
 import { api } from "../redux/api";
+import { Credential } from "../models/credential";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -38,8 +39,18 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await loginUser(inputs).unwrap();
-    dispatch(login(res));
+    const credentials: Credential = {
+      ...inputs,
+      email: null,
+    };
+    try {
+      const res = await loginUser(credentials).unwrap();
+      dispatch(login(res));
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+      setError("Login failed. Please try again.");
+    }
     navigate("/");
   };
 

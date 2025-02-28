@@ -17,7 +17,7 @@ export default function Chart(props: any){ // yes I know any defeats the purpose
     };
 
     return (
-        <Container style={style} className="m-5">
+        <Container style={style} className="m-5 foreground-container">
             <p style={{textAlign: "center", height: "10%", marginBottom: "0"}}>{props.header}</p> {/* replace h1 text with {props.header} */}
             <ResponsiveContainer width="100%" height="90%">
                 <AreaChart
