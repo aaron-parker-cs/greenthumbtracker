@@ -1,5 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer, { initialState as userInitialState } from "./redux/user/slice";
+import userReducer, {
+  initialState as userInitialState,
+} from "./redux/user/slice";
+import plantReducer from "./redux/plant/slice";
 import { api } from "./redux/api";
 
 // Load user state from local storage
@@ -10,6 +13,7 @@ const persistedState = localStorage.getItem("userState")
 export const store = configureStore({
   reducer: {
     user: userReducer,
+    plant: plantReducer,
     // Merge the RTK Query reducer
     [api.reducerPath]: api.reducer,
   },

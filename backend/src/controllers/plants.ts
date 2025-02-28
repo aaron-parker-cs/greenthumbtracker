@@ -1,44 +1,114 @@
-import { pool } from "../db/db";
 import { Request, Response } from "express";
+import { plantRepository } from "../db/repositories/plant.repository";
 
-export const getPlants = (req: Request, res: Response) => {
-    const q = "SELECT * FROM plants";
-    pool.query(q, (err, data) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.send(data);
-    });
-}
+/**
+ * GET /plants
+ * Retrieve all plants belonging to a particular user.
+ * (Assuming req.userId is set via middleware; adjust as needed.)
+ */
+export const getPlants = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).userId;
 
-export const createPlant = (req: Request, res: Response) => {
-    const { user_id, name, species } = req.body;
+    if (!userId) {
+      res.status(400).json({ message: "No user ID provided." });
+      return;
+    }
 
-    const q = "INSERT INTO plants (user_id, name, species) VALUES (?, ?, ?)";
-    const values = [user_id, name, species];
-    pool.query(q, values, (err, data) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ message: "Plant created successfully!" });
-    });
-}
+    const plants = await plantRepository.findPlantsByUserId(userId);
+    res.status(200).json(plants);
+    return;
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+    return;
+  }
+};
 
-export const updatePlant = (req: Request, res: Response) => {
+/**
+ * POST /plants
+ * Create a new plant for a user.
+ * Expecting { user_id, name, species } in the request body.
+ */
+export const createPlant = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { name, species } = req.body;
+    const user_id = req.userId;
+    if (!user_id || !name || !species) {
+      res
+        .status(400)
+        .json({ message: "user_id, name, and species are required." });
+      return;
+    }
+
+    await plantRepository.createPlant(user_id, name, species);
+    res.status(201).json({ message: "Plant created successfully!" });
+    return;
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+    return;
+  }
+};
+
+/**
+ * PUT /plants/:id
+ * Update an existing plant. Expecting { user_id, name, species } in req.body.
+ */
+export const updatePlant = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const id = req.params?.id;
+    const { name, species } = req.body;
+    const user_id = req.userId;
+
+    if (!id) {
+      res.status(400).json({ message: "No plant ID provided." });
+      return;
+    }
+    if (!user_id || !name || !species) {
+      res
+        .status(400)
+        .json({ message: "user_id, name, and species are required." });
+      return;
+    }
+
+    const plantId = parseInt(id, 10);
+    await plantRepository.updatePlant(plantId, user_id, name, species);
+
+    res.status(200).json({ message: "Plant updated successfully!" });
+    return;
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+    return;
+  }
+};
+
+/**
+ * DELETE /plants/:id
+ * Delete a plant by ID.
+ */
+export const deletePlant = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
     const { id } = req.params;
-    const { user_id, name, species } = req.body;
+    if (!id) {
+      res.status(400).json({ message: "No plant ID provided." });
+      return;
+    }
+    const plantId = parseInt(id, 10);
 
-    const q = "UPDATE plants SET user_id = ?, name = ?, species = ? WHERE id = ?";
-    const values = [user_id, name, species, id];
-    pool.query(q, values, (err, data) => {
-        if (err) return res.status(500).json({ error: err.message });
+    await plantRepository.deletePlant(plantId);
 
-        res.status(200).json({ message: "Plant updated successfully!" });
-    });
-}
-
-export const deletePlant = (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    const q = "DELETE FROM plants WHERE id = ?";
-    pool.query(q, [id], (err, data) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(200).json({ message: "Plant deleted successfully!" });
-    });
-}
+    res.status(200).json({ message: "Plant deleted successfully!" });
+    return;
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+    return;
+  }
+};
