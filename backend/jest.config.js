@@ -7,6 +7,7 @@
 const config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  setupFiles: ['./tests/jest.setup.js'],
 
   // All imported modules in your tests should be mocked automatically
   // automock: false,
