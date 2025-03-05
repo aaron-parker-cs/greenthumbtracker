@@ -5,7 +5,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "start": "nodemon ./src/index.ts",
-    "test": "jest --testEnvironment=node --runInBand tests",
+    "test": "jest --testEnvironment=node --detectOpenHandles --runInBand tests",
     "build": "tsc",
     "typeorm": "typeorm-ts-node-commonjs",
     "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -- -n",
@@ -20,6 +20,7 @@
     "class-transformer": "^0.5.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "mysql": "^2.18.1",
     "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
