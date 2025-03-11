@@ -1,31 +1,23 @@
-import { expect, jest, test, describe, beforeEach, beforeAll, afterAll } from '@jest/globals';
+import { expect, jest, test, describe, beforeEach, beforeAll, afterEach, afterAll } from '@jest/globals';
 import { Request, Response, NextFunction } from 'express';
 import { validatePlant } from '../src/middleware/plants';
-// import { PlantRepository } from '../src/db/repositories/plant.repository';
-// import { UserRepository } from '../src/db/repositories/user.repository';
-// import { User } from '../src/db/entities/user';
-// import { Plant } from '../src/db/entities/plant';
-// import { AppDataSource } from '../src/db/db';
-var mysql = require('mysql');
+import mysql, { ConnectionOptions, Connection } from 'mysql2';
 const request = require('supertest');
 const express = require('express');
 
 const app = express();
 app.use(express.json());
-var connection: any;
+var connection: Connection;
 
-// const plantRepo = new PlantRepository();
-// const userRepository = new UserRepository();
-
-var userId = 1000000; // 1 million
-var plantId = "1000000"; // 1 million
+const userId = 1000000; // 1 million
+const plantId = "2000000"; // 1 million
 
 const data = {
     name: 'validName',
     species: 'validSpecies',
 };
 
-let tempUserData = {
+const tempUserData = {
     id: userId,
     username: 'validUsername',
     email: 'valid@email.com',
@@ -46,17 +38,6 @@ app.post('/:id/:customUserId', setReqUserId, validatePlant, (req: Request, res: 
 });
 
 beforeAll(async () => {
-    // await AppDataSource.initialize();
-
-    // creating and saving a new user
-    // const userRepo = AppDataSource.getRepository(User);
-    // const newUser = new User();
-    // newUser.id = tempUserData.id; // 1,000,000
-    // newUser.username = tempUserData.username; // 'validUsername'
-    // newUser.email = tempUserData.email; // 'valid@email.com'
-    // newUser.password = tempUserData.password; // 'validPassword'
-    // await userRepo.save(newUser);
-
     connection = mysql.createConnection({
         host: process.env.MYSQL_HOST,
         user: process.env.MYSQL_USERNAME,
@@ -64,41 +45,58 @@ beforeAll(async () => {
         database: process.env.MYSQL_DATABASE
     });
 
-    connection.connect();
-
 });
 
 afterAll(async () => {
-    // const userRepo = AppDataSource.getRepository(User);
-    // const plantRepo = AppDataSource.getRepository(Plant);
-
-    // Clean up created entities
-    // const user = await userRepo.findOne({ where: { id: userId } });
-    // if (user) {
-    //     await userRepo.remove(user);
-    // }
-
-    // const plant = await plantRepo.findOne({ where: { id: parseInt(plantId) } });
-    // if (plant) {
-    //     await plantRepo.remove(plant);
-    // }
-
-    // await AppDataSource.destroy();
-
-    connection.end();
+    connection.end((err) => {
+        if (err) throw err;
+    });
 });
 
 describe('Ensure plants.ts middleware works as expected', () => {
 
-    function initializeValidData() {
-        userId = 1000000; // 1 million
-        data.name = 'validName';
-        data.species = 'validSpecies';
-        plantId = "1000000"; // 1 million
-    };
+    function addUser(user_id: number, username: string, email: string, password: string) {
+        let addUser = 'INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)';
+        let userValues = [user_id, username, email, password];
+        connection.execute(addUser, userValues, (err: any) => {
+            if(err) throw err;
+        });
+    }
 
-    beforeEach(() => {
-        initializeValidData();
+    function addPlant(plant_id: string, user_id: number, name: string, species: string) {
+        let addPlant = 'INSERT INTO plants (id, user_id, name, species) VALUES (?, ?, ?, ?)';
+        let plantValues = [plant_id, user_id, name, species];
+        connection.execute(addPlant, plantValues, (err: any) => {
+            if(err) throw err;
+        });
+    }
+
+    function removeUser(user_id: number){
+        let removeUser = 'DELETE FROM users WHERE id=?';
+        connection.execute(removeUser, [user_id], (err: any) => {
+            if(err) throw err;
+        });
+    }
+
+    function removePlant(plant_id: string){
+        let removePlant = 'DELETE FROM plants WHERE id=?';
+        connection.execute(removePlant, [plant_id], (err: any) => {
+            if(err) throw err;
+        });
+    }
+
+    beforeEach((done) => {
+        // enter valid data into database
+        addUser(tempUserData.id, tempUserData.username, tempUserData.email, tempUserData.password);
+        addPlant(plantId, userId, data.name, data.species);
+        done();
+    });
+
+    afterEach((done) => {
+        // remove valid data from database
+        removePlant(plantId);
+        removeUser(userId);
+        done();
     });
     
     test('missing or invalid user_id', async () => {
@@ -140,39 +138,32 @@ describe('Ensure plants.ts middleware works as expected', () => {
         // jest.spyOn(plantRepo, 'findPlantById').mockResolvedValue(null);
         
         const response = await request(app).post('/' + plantId + '/' + userId).send(data);
-        console.log(response.body);
+        // console.log(response.body);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({message: 'Plant not found.'});
 
     });
-
-    // creating and saving a new plant
-    // const plantRepo = AppDataSource.getRepository(Plant);
-    // const newPlant = new Plant();
-    // newPlant.id = parseInt(plantId);
-    // newPlant.user = { id: userId + 1 } as User;
-    // newPlant.name = data.name;
-    // newPlant.species = data.species;
     
     test('plant does not belong to user', async () => {
-        // await userRepo.save(newUser);
-        // await plantRepo.save(newPlant);
-        const response = await request(app).post('/' + plantId + '/' + userId).send(data);
+        
+        const response = await request(app).post('/' + plantId + '/' + (userId + 1)).send(data);
         expect(response.status).toBe(403);
         expect(response.body).toEqual({message: 'You do not have permission to update this plant.'});
-        // await plantRepo.remove(newPlant);
-        // await userRepo.remove(newUser);
     });
-    
-    // newPlant.user = { id: userId } as User; // update to have correct user id
-    
 
     test('user does not exist', async () => {
-        // await plantRepo.save(newPlant);
-        // jest.spyOn(userRepository, 'findUserById').mockResolvedValue(null);
+        // remove user from database leaving plant without a user
+        let removeUser = 'DELETE FROM users WHERE id=?';
+        connection.execute(removeUser, [userId], (err: any) => {
+            if(err) throw err;
+        });
+
         const response = await request(app).post('/' + plantId + '/' + userId).send(data);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({message: 'User not found.'});
+        
+        // re-add user to database so removing during afterEach() doesn't fail
+        addUser(tempUserData.id, tempUserData.username, tempUserData.email, tempUserData.password);
     });
 
     test('name is too short', async () => {
