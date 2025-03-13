@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Plant } from "./plant";
+import { UnitOfMeasure } from "./unit";
 
 @Entity()
 export class GrowthRecord {
@@ -18,6 +19,9 @@ export class GrowthRecord {
 
   @Column()
   height!: number;
+
+  @ManyToOne(() => UnitOfMeasure, (uom) => uom.id, { eager: true })
+  uom!: UnitOfMeasure;
 
   @Column()
   date!: Date;

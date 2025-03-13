@@ -2,6 +2,7 @@ import { Equal, Repository } from "typeorm";
 import { WaterRecord } from "../entities/water_record";
 import { Plant } from "../entities/plant";
 import { AppDataSource } from "../db";
+import { UnitOfMeasure } from "../entities/unit";
 
 export class WaterRepository {
   private repo: Repository<WaterRecord>;
@@ -26,7 +27,8 @@ export class WaterRepository {
   async createWaterRecord(
     plantId: number,
     date: Date,
-    amount: number
+    amount: number,
+    uom: UnitOfMeasure
   ): Promise<WaterRecord> {
     const newWaterRecord = new WaterRecord();
     const plant = await this.repo.manager.findOne(Plant, {
@@ -38,6 +40,7 @@ export class WaterRepository {
     newWaterRecord.plant = plant;
     newWaterRecord.date = date;
     newWaterRecord.amount = amount;
+    newWaterRecord.uom = uom;
     return this.repo.save(newWaterRecord);
   }
 
@@ -48,7 +51,8 @@ export class WaterRepository {
     id: number,
     plantId: number,
     date: Date,
-    amount: number
+    amount: number,
+    uom: UnitOfMeasure
   ): Promise<WaterRecord> {
     const waterRecord = await this.repo.findOne({ where: { id } });
     if (!waterRecord) {
@@ -63,6 +67,7 @@ export class WaterRepository {
     waterRecord.plant = plant;
     waterRecord.date = date;
     waterRecord.amount = amount;
+    waterRecord.uom = uom;
     return this.repo.save(waterRecord);
   }
 

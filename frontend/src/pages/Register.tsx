@@ -11,9 +11,10 @@ const Register = () => {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const [register, { isLoading, isError, error: registerError }] =
+  const [registerUser, { isLoading, isError, error: registerError }] =
     api.useRegisterMutation();
 
   const navigate = useNavigate();
@@ -33,62 +34,117 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (inputs.password !== inputs.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(inputs.password)) {
+      setError(
+        "Password must be at least 8 characters long and include a number and a special character"
+      );
+      return;
+    }
     const credentials: Credential = {
-      ...inputs,
+      username: inputs.username,
+      email: inputs.email,
+      password: inputs.password,
     };
-    await register(credentials).unwrap();
-    navigate("/");
+    try {
+      await registerUser(credentials).unwrap();
+      navigate("/verify");
+    } catch (err) {
+      console.log(err);
+      setError("Registration failed. Please try again.");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+    const { id, value } = e.target;
+    setInputs((prev) => ({ ...prev, [id]: value }));
+
+    if (id === "password" || id === "confirmPassword") {
+      if (inputs.password !== inputs.confirmPassword) {
+        setError("Passwords do not match");
+      } else {
+        setError("");
+      }
+
+      const passwordRegex =
+        /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+      if (!passwordRegex.test(inputs.password)) {
+        setError(
+          "Password must be at least 8 characters long and include a number and a special character"
+        );
+      } else {
+        setError("");
+      }
+    }
   };
 
   return (
-    <MDBCard fluid className="w-25 mx-auto mt-5 p-5 shadow border-0 rounded ">
-      <MDBCardHeader className="text-center">
-        <h3>Register</h3>
-      </MDBCardHeader>
-      <MDBCardBody className="d-flex flex-row align-items-center justify-content-center">
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-4" controlId="username">
-            <Form.Control
-              type="text"
-              placeholder="username"
-              onChange={handleChange}
-            />
-          </Form.Group>
+    <div className="auth-page">
+      <MDBCard className="auth-card rounded">
+        <MDBCardHeader className="text-center p-4">
+          <h3 className="mb-0">Create an Account</h3>
+          <small className="text-muted">Sign up to get started</small>
+        </MDBCardHeader>
 
-          <Form.Group className="mb-4" controlId="email">
-            <Form.Control
-              type="email"
-              placeholder="email"
-              onChange={handleChange}
-            />
-          </Form.Group>
+        <MDBCardBody className="p-4">
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="username">
+              <Form.Control
+                type="text"
+                placeholder="Username"
+                onChange={handleChange}
+              />
+            </Form.Group>
 
-          <Form.Group className="mb-4" controlId="password">
-            <Form.Control
-              type="password"
-              placeholder="password"
-              onChange={handleChange}
-            />
-          </Form.Group>
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                onChange={handleChange}
+              />
+            </Form.Group>
 
-          <Button type="submit" className="mb-4 w-100">
-            Register {isLoading && <Spinner animation="border" size="sm" />}
-          </Button>
+            <Form.Group className="mb-3" controlId="password">
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                onChange={handleChange}
+              />
+            </Form.Group>
 
-          <Form.Group className="mb-4 text-center">
-            <Form.Text className="text-danger">{error}</Form.Text>
-          </Form.Group>
+            <Form.Group className="mb-4" controlId="confirmPassword">
+              <Form.Control
+                type="password"
+                placeholder="Confirm Password"
+                onChange={handleChange}
+              />
+            </Form.Group>
 
-          <span className="m-3">
-            Have an account? <Link to="/login">Login</Link>
-          </span>
-        </Form>
-      </MDBCardBody>
-    </MDBCard>
+            {error && (
+              <div className="text-danger text-center mb-3">{error}</div>
+            )}
+
+            <Button type="submit" className="w-100 mb-3" disabled={isLoading}>
+              Register {isLoading && <Spinner animation="border" size="sm" />}
+            </Button>
+
+            <div className="text-center">
+              <small className="text-muted">
+                Have an account?{" "}
+                <Link to="/login" className="text-decoration-none">
+                  Login
+                </Link>
+              </small>
+            </div>
+          </Form>
+        </MDBCardBody>
+      </MDBCard>
+    </div>
   );
 };
 

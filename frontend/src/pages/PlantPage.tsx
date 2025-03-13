@@ -142,7 +142,7 @@ const PlantPage = () => {
   };
 
   return (
-    <div className="foreground-container">
+    <div className="page-container">
       <div className="d-flex w-100 mt-3">
         <h1 className="center-heading">Your Plants</h1>
         <button
