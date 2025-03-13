@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci 
 
 # Copy local files to app directory
 COPY . .
@@ -21,4 +21,4 @@ RUN npm run build
 # 2) Copy the build output to /usr/share/nginx/html
 
 EXPOSE 5173
-CMD ["npm", "start"]
+CMD ["npm", "start", "--host"]
