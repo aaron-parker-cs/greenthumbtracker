@@ -54,6 +54,8 @@ router.get("/:plantId", verifyToken, getWaterRecords);
  *               waterDate:
  *                 type: string
  *                 format: date
+ *               uomId:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Created a new plant
@@ -90,6 +92,8 @@ router.post("/:plantId", verifyToken, validateWater, createWaterRecord);
  *               waterDate:
  *                 type: string
  *                 format: date
+ *               uomId:
+ *                 type: number
  *     responses:
  *       200:
  *         description: Updated the plant

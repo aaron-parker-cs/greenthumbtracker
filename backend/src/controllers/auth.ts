@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 import { userRepository } from "../db/repositories/user.repository";
 import { AppDataSource } from "../db/db";
 import { User } from "../db/entities/user";
+import { sendEmail } from "../utils/awsMailer";
 
 /**
  * Register a new user
@@ -30,10 +32,39 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
 
-    // Create and save the new user in DB
-    await userRepository.createUser(username, email, hashedPassword);
+    // Create a new user
+    const user = new User();
+    user.username = username;
+    user.email = email;
+    user.password = hashedPassword;
+    user.isVerified = false;
 
-    res.status(200).json("User has been created.");
+    // Generate a verification token
+    const token = jwt.sign({ email }, process.env.JWT_SECRET || "jwtSecret", {
+      expiresIn: "1d",
+    });
+    user.verifyToken = token;
+    user.verifyTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    // Send verification email
+    const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+
+    // Send email with verification link
+    const htmlContent = `<h5> Hello ${username},</h5>
+      <p>Thank you for registering with GreenThumb Tracker. Please click the link below to verify your email address:</p> <a href="${verifyUrl}">Verify Email</a>`;
+
+    await sendEmail(
+      email,
+      "GreenThumb Tracker - Verify your email",
+      htmlContent
+    );
+
+    // Create and save the new user in DB
+    await AppDataSource.getRepository(User).save(user);
+
+    res
+      .status(200)
+      .json("User has been created. Please check your email to verify.");
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
@@ -60,6 +91,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       .getOne();
     if (!user) {
       res.status(404).json("Username or password incorrect!");
+      return;
+    }
+
+    // Check if user's email is verified
+    if (!user.isVerified) {
+      res.status(403).json("Please verify your email before logging in.");
       return;
     }
 
@@ -102,4 +139,145 @@ export const logout = (req: Request, res: Response): void => {
     })
     .status(200)
     .json("User has been logged out.");
+};
+
+/**
+ * Verify the user's email
+ */
+export const verifyEmail = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { token } = req.query;
+    if (!token) {
+      res.status(400).json("Token missing!");
+      return;
+    }
+
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { verifyToken: token as string },
+    });
+
+    if (!user) {
+      res.status(404).json("Invalid token!");
+      return;
+    }
+
+    // Check if token has expired
+    if (user.verifyTokenExpires && user.verifyTokenExpires < new Date()) {
+      res.status(400).json("Token has expired!");
+      return;
+    }
+
+    // Update user's isVerified status
+    user.isVerified = true;
+    user.verifyToken = undefined;
+    user.verifyTokenExpires = undefined;
+    await AppDataSource.getRepository(User).save(user);
+
+    res.status(200).json("Email has been verified!");
+    return;
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+};
+
+/**
+ * Request a password reset
+ */
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      res.status(400).json("Email missing!");
+      return;
+    }
+
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      res.status(404).json("User not found!");
+      return;
+    }
+
+    // Generate a reset token
+    const resetToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET || "jwtSecret",
+      {
+        expiresIn: "1d",
+      }
+    );
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await AppDataSource.getRepository(User).save(user);
+
+    // Send email with reset link
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+
+    // Send email with reset link
+    const htmlContent = `<h5> Hello ${user.username},</h5>
+      <p>You have requested to reset your password. Please click the link below to reset your password:</p> <a href="${resetUrl}">Reset Password</a>`;
+
+    await sendEmail(
+      email,
+      "GreenThumb Tracker - Reset your password",
+      htmlContent
+    );
+
+    res.status(200).json("Password reset email has been sent.");
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+};
+
+/**
+ * Reset the user's password
+ */
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      res.status(400).json("Reset Token or new password missing!");
+      return;
+    }
+
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { resetPasswordToken: token as string },
+    });
+
+    if (!user) {
+      res.status(404).json("Invalid token!");
+      return;
+    }
+
+    // Check if token has expired
+    if (user.resetPasswordExpires && user.resetPasswordExpires < new Date()) {
+      res.status(400).json("Token has expired!");
+      return;
+    }
+
+    // Hash & salt the new password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    // Update user's password
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await AppDataSource.getRepository(User).save(user);
+
+    res.status(200).json("Password has been reset!");
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
 };

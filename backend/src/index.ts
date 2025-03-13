@@ -19,6 +19,7 @@ import authRoutes from "./routes/auth";
 import plantRoutes from "./routes/plants";
 import waterRoutes from "./routes/water";
 import growthRoutes from "./routes/growth";
+import uomRoutes from "./routes/uom";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import { specs } from "./config/swagger";
@@ -45,6 +46,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/plants", plantRoutes);
 app.use("/api/water", waterRoutes);
 app.use("/api/growth", growthRoutes);
+app.use("/api/uom", uomRoutes);
 
 // Swagger -- API Documentation and routes testing
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));

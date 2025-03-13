@@ -1,0 +1,39 @@
+# This is a simple skeleton for a github action that builds and pushes a docker image to GitHub Container Registry.
+# This is to prepare for deployment to a container
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      # Login to GitHub Container Registry or Docker Hub
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push backend
+      - name: Build backend image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/greenthumb-backend:latest ./backend
+      - name: Push backend image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/greenthumb-backend:latest
+
+      # Build and push frontend
+      - name: Build frontend image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/greenthumb-frontend:latest ./frontend
+      - name: Push frontend image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/greenthumb-frontend:latest

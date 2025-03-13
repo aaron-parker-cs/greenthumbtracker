@@ -1,22 +1,35 @@
-$backgroundGray: #dddddd;
-$primaryColor: #007bff;
-$secondaryColor: #6c757d;
-$successColor: #28a745;
-$dangerColor: #dc3545;
-$warningColor: #ffc107;
-$infoColor: #17a2b8;
-$lightColor: #f8f9fa;
 
-#root {
-  display: flex;
-  height: 100vh;
-  font-family: Arial, sans-serif;
-  background-color: $backgroundGray;
-}
+$backgroundGray: #f8f9fa; 
+$lightColor: #ffffff;
+
 
 body {
-  padding-top: 56px;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
+
+#root {
+  height: 100vh; 
+}
+
+.auth-page {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #ece9e6, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px; 
+  border-radius: 1rem; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
+}
+
 
 .foreground-container {
   background-color: $lightColor;
@@ -27,11 +40,16 @@ body {
   height: 100%;
 }
 
+.page-container {
+  margin-top: 70px;
+  padding: 1rem;
+}
+
 .app-nav {
-    position: "fixed";
-    top: 0;
-    width: "100%";
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 .center-heading {

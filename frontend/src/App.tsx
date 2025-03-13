@@ -8,6 +8,11 @@ import "./style.scss";
 import "react-toastify/dist/ReactToastify.css";
 import PlantPage from "./pages/PlantPage";
 import { ToastContainer } from "react-bootstrap";
+import VerifyEmail from "./pages/VerifyEmail";
+import VerifiedPage from "./pages/VerifiedPage";
+import RequestPasswordReset from "./pages/RequestPasswordReset";
+import ResetConfirmation from "./pages/ResetConfirmation";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const Layout = () => {
   return (
@@ -41,6 +46,26 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/verify",
+    element: <VerifyEmail />,
+  },
+  {
+    path: "/verify-email",
+    element: <VerifiedPage />,
+  },
+  {
+    path: "/forgot-password",
+    element: <RequestPasswordReset />,
+  },
+  {
+    path: "/password-reset-confirmation",
+    element: <ResetConfirmation />,
+  },
+  {
+    path: "reset-password",
+    element: <ResetPasswordPage />,
   },
 ]);
 
