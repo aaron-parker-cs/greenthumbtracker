@@ -27,7 +27,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d
 
 # Copy the build output to the nginx html directory
-COPY --from=build /build /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
 # Expose port 80 and 443
 EXPOSE 80
