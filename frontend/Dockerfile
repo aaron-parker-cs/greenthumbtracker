@@ -1,36 +1,38 @@
-# Use Node.js runtime as parent image
-FROM node:22 AS build
+# -----------------------
+# 1) Build Stage
+# -----------------------
+    FROM node:22 AS build
 
-# Set working directory
-WORKDIR /usr/src/app
-
-# Copy package.json
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci 
-
-# Copy local files to app directory
-COPY . .
-
-
-# Build production build
-RUN npm run build
-
-# Build the reverse proxy for the frontend
-FROM nginx:alpine
-
-# Remove default config
-RUN rm /etc/nginx/conf.d/default.conf
-
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d
-
-# Copy the build output to the nginx html directory
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
-
-# Expose port 80 and 443
-EXPOSE 80
-EXPOSE 443
-
-CMD ["npm", "start", "--host"]
+    WORKDIR /usr/src/app
+    
+    # Copy package.json and package-lock.json (or yarn.lock)
+    COPY package*.json ./
+    
+    RUN npm ci
+    
+    # Copy the rest of your source code
+    COPY . .
+    
+    # Run your build (output goes to /usr/src/app/build or /usr/src/app/dist)
+    RUN npm run build
+    
+    # -----------------------
+    # 2) Production Stage
+    # -----------------------
+    FROM nginx:alpine
+    
+    # Remove default config 
+    RUN rm /etc/nginx/conf.d/default.conf
+    
+    # Copy custom Nginx config
+    COPY nginx.conf /etc/nginx/conf.d
+    
+    # Copy the build output from the build stage to the Nginx html directory
+    COPY --from=build /usr/src/app/build /usr/share/nginx/html
+    
+    EXPOSE 80
+    EXPOSE 443
+    
+    # Run nginx in the foreground
+    CMD ["nginx", "-g", "daemon off;"]
+    
