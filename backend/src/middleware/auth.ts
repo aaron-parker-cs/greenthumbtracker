@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import { userRepository } from "../db/repositories/user.repository";
+import validator from "validator";
 
 declare global {
   namespace Express {
@@ -80,6 +82,11 @@ export const validateRegister = (
   }
 
   // Validate email
+  if (!validator.isEmail(email)) {
+    res.status(400).json({ message: "Invalid email address." });
+    return;
+  }
+
   if (email.length > 100) {
     res
       .status(400)
@@ -88,5 +95,26 @@ export const validateRegister = (
   }
 
   // All validations passed, proceed to the next middleware or controller
+  next();
+};
+
+export const authorizeAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { userId } = req.body.userId;
+
+  if (!userId) {
+    res.status(400).json({ message: "Unauthorized" });
+    return;
+  }
+
+  const role = await userRepository.findUserRoleByUserId(userId);
+  if (!role || role.name !== "admin") {
+    res.status(400).json({ message: "Unauthorized" });
+    return;
+  }
+
   next();
 };

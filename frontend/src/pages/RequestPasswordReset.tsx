@@ -1,33 +1,26 @@
 import { useEffect, useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
-import { useDispatch } from "react-redux";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../redux/user/slice";
 import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
 import { api } from "../redux/api";
-import { Credential } from "../models/credential";
 
-const Login = () => {
-  const dispatch = useDispatch();
-  const [inputs, setInputs] = useState({
-    username: "",
-    password: "",
-  });
+const RequestPasswordReset = () => {
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [loginUser, { isLoading, isError, error: loginError }] =
-    api.useLoginMutation();
+  const [requestPasswordReset, { isLoading, isError, error: resetError }] =
+    api.useForgotPasswordMutation();
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (
       isError &&
-      loginError &&
-      typeof loginError === "object" &&
-      "data" in loginError
+      resetError &&
+      typeof resetError === "object" &&
+      "data" in resetError
     ) {
-      const errorData = loginError as FetchBaseQueryError;
+      const errorData = resetError as FetchBaseQueryError;
 
       // If the server returns a string
       if (typeof errorData.data === "string") {
@@ -46,25 +39,20 @@ const Login = () => {
     } else if (isError) {
       setError("An unexpected error occurred");
     }
-  }, [isError, loginError]);
+  }, [isError, resetError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+    setEmail(e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const credentials: Credential = {
-      ...inputs,
-      email: null,
-    };
     try {
-      const res = await loginUser(credentials).unwrap();
-      dispatch(login(res));
-      navigate("/");
+      await requestPasswordReset(email).unwrap();
+      navigate("/password-reset-confirmation");
     } catch (err) {
       console.log(err);
-      setError("Login failed. Please try again.");
+      setError("Password reset request failed. Please try again.");
     }
   };
 
@@ -72,23 +60,17 @@ const Login = () => {
     <div className="auth-page">
       <MDBCard className="auth-card rounded">
         <MDBCardHeader className="text-center p-4">
-          <h3 className="mb-0">Welcome Back</h3>
-          <small className="text-muted">Sign in to continue</small>
+          <h3 className="mb-0">Reset Password</h3>
+          <small className="text-muted">
+            Enter your email to reset password
+          </small>
         </MDBCardHeader>
         <MDBCardBody className="p-4">
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="username">
+            <Form.Group className="mb-3" controlId="email">
               <Form.Control
-                type="text"
-                placeholder="Username"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-4" controlId="password">
-              <Form.Control
-                type="password"
-                placeholder="Password"
+                type="email"
+                placeholder="Email"
                 onChange={handleChange}
               />
             </Form.Group>
@@ -98,19 +80,15 @@ const Login = () => {
             )}
 
             <Button type="submit" className="w-100 mb-3" disabled={isLoading}>
-              Sign In {isLoading && <Spinner animation="border" size="sm" />}
+              Request Password Reset{" "}
+              {isLoading && <Spinner animation="border" size="sm" />}
             </Button>
 
             <div className="text-center">
               <small className="text-muted">
-                Don’t have an account?{" "}
-                <Link to="/register" className="text-decoration-none">
-                  Register
-                </Link>
-              </small>
-              <small className="text-muted d-block">
-                <Link to="/forgot-password" className="text-decoration-none">
-                  Forgot Password?
+                Remembered your password?{" "}
+                <Link to="/login" className="text-decoration-none">
+                  Sign In
                 </Link>
               </small>
             </div>
@@ -121,4 +99,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default RequestPasswordReset;

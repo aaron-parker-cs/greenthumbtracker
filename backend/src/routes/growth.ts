@@ -54,6 +54,9 @@ router.get("/:plantId", verifyToken, getGrowthRecords);
  *               date:
  *                 type: string
  *                 format: date
+ *               uomId:
+ *                 type: number
+ *
  *     responses:
  *       201:
  *         description: Created a new growth record
@@ -90,6 +93,8 @@ router.post("/:plantId", verifyToken, validateGrowth, createGrowthRecord);
  *               date:
  *                 type: string
  *                 format: date
+ *               uomId:
+ *                 type: number
  *     responses:
  *       200:
  *         description: Updated the growth record

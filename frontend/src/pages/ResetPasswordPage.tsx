@@ -1,64 +1,46 @@
 import { useEffect, useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Link, useNavigate } from "react-router-dom";
 import { MDBCard, MDBCardBody, MDBCardHeader } from "mdb-react-ui-kit";
 import { api } from "../redux/api";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Credential } from "../models/credential";
 
-const Register = () => {
+const ResetPasswordPage = () => {
   const [inputs, setInputs] = useState({
-    username: "",
-    email: "",
+    token: "",
     password: "",
     confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const [registerUser, { isLoading, isError, error: registerError }] =
-    api.useRegisterMutation();
+  const [resetPassword, { isLoading, isError, error: resetError }] =
+    api.useResetPasswordMutation();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isError) {
-      if ("data" in registerError) {
-        const errorData = registerError as FetchBaseQueryError & {
-          data: { message: string };
-        };
-        setError(errorData.data.message || "An unexpected error occurred");
+    if (
+      isError &&
+      resetError &&
+      typeof resetError === "object" &&
+      "data" in resetError
+    ) {
+      const errorData = resetError as FetchBaseQueryError;
+
+      if (typeof errorData.data === "string") {
+        setError(errorData.data);
+      } else if (
+        errorData.data &&
+        typeof errorData.data === "object" &&
+        "message" in errorData.data
+      ) {
+        setError((errorData.data as { message: string }).message);
       } else {
         setError("An unexpected error occurred");
       }
+    } else if (isError) {
+      setError("An unexpected error occurred");
     }
-  }, [isError, registerError]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (inputs.password !== inputs.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    const passwordRegex =
-      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
-    if (!passwordRegex.test(inputs.password)) {
-      setError(
-        "Password must be at least 8 characters long and include a number and a special character"
-      );
-      return;
-    }
-    const credentials: Credential = {
-      username: inputs.username,
-      email: inputs.email,
-      password: inputs.password,
-    };
-    try {
-      await registerUser(credentials).unwrap();
-      navigate("/verify");
-    } catch (err) {
-      console.log(err);
-      setError("Registration failed. Please try again.");
-    }
-  };
+  }, [isError, resetError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -83,36 +65,50 @@ const Register = () => {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (inputs.password !== inputs.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(inputs.password)) {
+      setError(
+        "Password must be at least 8 characters long and include a number and a special character"
+      );
+      return;
+    }
+    try {
+      const queryParams = new URLSearchParams(window.location.search);
+      const token = queryParams.get("token");
+
+      if (!token) {
+        setError("Token is missing");
+        return;
+      }
+
+      await resetPassword({ token, password: inputs.password }).unwrap();
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
+      setError("Reset password failed. Please try again.");
+    }
+  };
+
   return (
     <div className="auth-page">
       <MDBCard className="auth-card rounded">
         <MDBCardHeader className="text-center p-4">
-          <h3 className="mb-0">Create an Account</h3>
-          <small className="text-muted">Sign up to get started</small>
+          <h3 className="mb-0">Reset Password</h3>
+          <small className="text-muted">Enter your new password</small>
         </MDBCardHeader>
-
         <MDBCardBody className="p-4">
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="username">
-              <Form.Control
-                type="text"
-                placeholder="Username"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Control
-                type="email"
-                placeholder="Email"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
             <Form.Group className="mb-3" controlId="password">
               <Form.Control
                 type="password"
-                placeholder="Password"
+                placeholder="New Password"
                 onChange={handleChange}
               />
             </Form.Group>
@@ -130,14 +126,15 @@ const Register = () => {
             )}
 
             <Button type="submit" className="w-100 mb-3" disabled={isLoading}>
-              Register {isLoading && <Spinner animation="border" size="sm" />}
+              Reset Password{" "}
+              {isLoading && <Spinner animation="border" size="sm" />}
             </Button>
 
             <div className="text-center">
               <small className="text-muted">
-                Have an account?{" "}
+                Remembered your password?{" "}
                 <Link to="/login" className="text-decoration-none">
-                  Login
+                  Sign In
                 </Link>
               </small>
             </div>
@@ -148,4 +145,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ResetPasswordPage;

@@ -2,6 +2,7 @@ import { Repository, Equal } from "typeorm";
 import { GrowthRecord } from "../entities/growth_record";
 import { AppDataSource } from "../db";
 import { Plant } from "../entities/plant";
+import { UnitOfMeasure } from "../entities/unit";
 
 export class GrowthRepository {
   private repo: Repository<GrowthRecord>;
@@ -34,7 +35,8 @@ export class GrowthRepository {
   async createGrowthRecord(
     plantId: number,
     date: Date,
-    height: number
+    height: number,
+    uom: UnitOfMeasure
   ): Promise<GrowthRecord> {
     const newGrowthRecord = new GrowthRecord();
     const plant = await this.repo.manager.findOne(Plant, {
@@ -46,6 +48,7 @@ export class GrowthRepository {
     newGrowthRecord.plant = plant;
     newGrowthRecord.date = date;
     newGrowthRecord.height = height;
+    newGrowthRecord.uom = uom;
     return this.repo.save(newGrowthRecord);
   }
 
@@ -56,7 +59,8 @@ export class GrowthRepository {
     id: number,
     plantId: number,
     date: Date,
-    height: number
+    height: number,
+    uom: UnitOfMeasure
   ): Promise<GrowthRecord> {
     const growthRecord = await this.repo.findOne({ where: { id } });
     if (!growthRecord) {
@@ -71,6 +75,7 @@ export class GrowthRepository {
     growthRecord.plant = plant;
     growthRecord.date = date;
     growthRecord.height = height;
+    growthRecord.uom = uom;
     return this.repo.save(growthRecord);
   }
 

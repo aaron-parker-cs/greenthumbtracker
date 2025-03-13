@@ -8,7 +8,7 @@ export const validateGrowth = async (
   next: NextFunction
 ): Promise<void> => {
   // Check if all fields are provided
-  const { height, date } = req.body;
+  const { height, date, uomId } = req.body;
   const plantId = req.params.plantId;
 
   if (!plantId || !height) {
@@ -23,6 +23,28 @@ export const validateGrowth = async (
   if (isNaN(height)) {
     res.status(400).json({ message: "Growth amount must be a number." });
     return;
+  }
+
+  // Check if uom ID is a number
+  if (uomId && isNaN(Number(uomId))) {
+    res.status(400).json({ message: "Unit of measure ID must be a number." });
+    return;
+  }
+
+  // Check if uom exists in the database
+  if (uomId) {
+    try {
+      const uom = await uomId.findUomById(Number(uomId));
+      if (!uom) {
+        res
+          .status(400)
+          .json({ message: `Unit of measure ${uomId} not found.` });
+        return;
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error." });
+      return;
+    }
   }
 
   // Sanity check the date (can't be in the future, or more than 1 year in the past)

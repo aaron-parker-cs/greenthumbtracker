@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { plantRepository } from "../db/repositories/plant.repository";
-export const validateWater = (
+import { uomRepository } from "../db/repositories/unit.repository";
+
+export const validateWater = async (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): Promise<void> => {
   // Check if all fields are provided, water date may be null for current timestamp
-  const { waterAmount, waterDate } = req.body;
+  const { waterAmount, waterDate, uomId } = req.body;
   const plantId = Number(req.params.plantId);
   console.log(req.body);
   if (!plantId || !waterAmount) {
@@ -21,6 +23,28 @@ export const validateWater = (
   if (isNaN(waterAmount)) {
     res.status(400).json({ message: "Water amount must be a number." });
     return;
+  }
+
+  // Check if uom ID is a number
+  if (uomId && isNaN(Number(uomId))) {
+    res.status(400).json({ message: "Unit of measure ID must be a number." });
+    return;
+  }
+
+  // Check if uom exists in the database
+  if (uomId) {
+    try {
+      const uom = await uomRepository.findUomById(Number(uomId));
+      if (!uom) {
+        res
+          .status(400)
+          .json({ message: `Unit of measure ${uomId} not found.` });
+        return;
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error." });
+      return;
+    }
   }
 
   // Check if plant exists in the database
