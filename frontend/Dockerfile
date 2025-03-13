@@ -13,12 +13,24 @@ RUN npm ci
 # Copy local files to app directory
 COPY . .
 
+
 # Build production build
 RUN npm run build
 
-# For dedicated production server:
-# 1) FROM nginx:stable-alpine
-# 2) Copy the build output to /usr/share/nginx/html
+# Build the reverse proxy for the frontend
+FROM nginx:alpine
 
-EXPOSE 5173
+# Remove default config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d
+
+# Copy the build output to the nginx html directory
+COPY --from=build /build /usr/share/nginx/html
+
+# Expose port 80 and 443
+EXPOSE 80
+EXPOSE 443
+
 CMD ["npm", "start", "--host"]
