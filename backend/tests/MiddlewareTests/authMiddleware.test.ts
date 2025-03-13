@@ -1,6 +1,6 @@
 import { expect, jest, test, describe, beforeEach, afterAll } from '@jest/globals';
 import { Request, Response } from 'express';
-import { validateRegister } from '../src/middleware/auth';
+import { validateRegister } from '../../src/middleware/auth';
 const request = require('supertest');
 const express = require('express');
 
