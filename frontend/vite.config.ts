@@ -11,6 +11,7 @@ export default defineConfig({
   server: {
     allowedHosts: [
       "localhost",
+      "frontend",
       "dev.greenthumbtracker.org",
       "www.greenthumbtracker.org",
     ],
