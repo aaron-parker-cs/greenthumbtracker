@@ -1,139 +1,63 @@
-@use "sass:color";
 
-$lightWhite: #F5F4EF;
-$olive: #76826E;
-$grayGreen: #94918C;
-$lightRed: #99696C;
-$darkGreen: #2C3530;
-/* Use bootstrap for now 
-html, body {
+$backgroundGray: #f8f9fa; 
+$lightColor: #ffffff;
+
+
+body {
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+#root {
+  height: 100vh; 
+}
+
+.auth-page {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #ece9e6, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px; 
+  border-radius: 1rem; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
+}
+
+
+.foreground-container {
+  background-color: $lightColor;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   height: 100%;
-  background-color: $darkGreen;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
+.page-container {
+  margin-top: 70px;
+  padding: 1rem;
 }
 
-.app {
+.app-nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
 
-  .container {
-    flex: 1;
+.center-heading {
+  text-align: center;
+  flex: 1;
+}
 
-    .link {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    width: 100%;
-
-    .auth {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background-color: $olive;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      padding: 50px;
-      background-color: $lightWhite;
-      width: 400px;
-      gap: 20px;
-
-      h1 {
-        text-align: center;
-        font-size: 20px;
-        color: $darkGreen;
-        margin-bottom: 20px;
-        font-family: Arial, Helvetica, sans-serif;
-      }
-
-      input {
-        padding: 10px;
-        border: none;
-        border-bottom: 1px solid $grayGreen;
-        width: 100%;
-        font-family: Arial, Helvetica, sans-serif;
-      }
-
-      button {
-        padding: 10px;
-        border: none;
-        background-color: $grayGreen;
-        color: white;
-        cursor: pointer;
-        width: 100%;
-        font-family: Arial, Helvetica, sans-serif;
-        text-align: center;
-
-        &:hover {
-          background-color: color.scale($grayGreen, $lightness: -10%);
-        }
-      }
-
-      p {
-        font-size: 12px;
-        text-align: center;
-        color: red;
-        font-family: Arial, Helvetica, sans-serif;
-      }
-
-      span {
-        font-size: 12px;
-        text-align: center;
-        color: $grayGreen;
-        font-family: Arial, Helvetica, sans-serif;
-      }
-    }
-
-    .navbar {
-      .container {
-        background-color: $darkGreen;
-        padding: 0px 0px;
-        display: flex;
-        justify-content: space-between;
-
-        .logo {
-          width: 100px;
-        }
-        .links {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-          font-family: Arial, Helvetica, sans-serif;
-
-          h6 {
-            font-size: 16px;
-            font-weight: 300;
-            color: $lightWhite;
-          }
-        }
-      }
-    }
-
-    footer {
-        padding: 20px;
-        background-color: $darkGreen;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 10px;
-
-        img {
-            height: 50px;
-        }
-
-        span {
-            color: $lightWhite;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    }
-  }
-} */
+.auto-align-end {
+  margin-top: auto;
+  margin-left: auto;
+}

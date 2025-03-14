@@ -1,30 +1,53 @@
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { logout } from "../../redux/user/slice";
+import { logout, UserState } from "../../redux/user/slice";
+import { api } from "../../redux/api";
 
 const AppNavbar = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state: { user: UserState }) => state.user);
+  const [logoutUser] = api.useLogoutMutation();
 
   const handleLogout = async () => {
     // Call the logout REST api endpoint and clear the user state
-    await axios.post("/api/auth/logout");
-    dispatch(logout(user));
+    await logoutUser();
+    dispatch(logout());
   };
 
   return (
-    <Navbar bg="success" variant="dark" expand="lg">
-      <Container>
-        <Navbar.Brand as={Link} to="/">
+    <Navbar
+      bg="success"
+      variant="dark"
+      expand="lg"
+      className="py-2"
+      style={{
+        position: "fixed",
+        top: 0,
+        width: "100%",
+        zIndex: 1000,
+      }}
+    >
+      <Container fluid>
+        <Navbar.Brand as={Link} to="/" className="ms-3">
           GreenThumb Tracker
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
+
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="me-3" />
+
+        <Navbar.Collapse
+          id="basic-navbar-nav"
+          className="justify-content-end me-3"
+        >
+          <Nav>
             <Nav.Link as={Link} to="/">
               Home
+            </Nav.Link>
+            <Nav.Link as={Link} to="/plants">
+              Plants
+            </Nav.Link>
+            <Nav.Link as={Link} to="/records">
+              Records
             </Nav.Link>
             {user.isAuthenticated ? (
               <Nav.Link as={Link} onClick={handleLogout} to="/login">
