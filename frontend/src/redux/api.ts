@@ -5,7 +5,7 @@ import { Credential } from "../models/credential";
 import { GrowthRecord } from "../models/growth";
 import { WaterRecord } from "../models/water";
 
-const baseUrl = import.meta.env.API_URL || `http://localhost:8800/api`;
+const baseUrl = `/api`;
 
 export const api = createApi({
   reducerPath: "api",
