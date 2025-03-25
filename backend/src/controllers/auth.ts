@@ -115,14 +115,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // Remove password from the response
     const { password: _, ...userData } = user;
 
-    // Set the cookie and respond
+    // Set the cookie and respond WITH JSON
     res
       .cookie("access_token", token, {
         httpOnly: true,
         // sameSite, secure, etc., as needed
       })
       .status(200)
-      .json(userData);
+      .json({
+        ...userData,   //login returning the token also, react front end should be fine
+      token
+    });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
