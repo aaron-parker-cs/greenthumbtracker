@@ -18,8 +18,20 @@ export const verifyToken = (
 ): void => {
   try {
     // 1. Get token from cookies
-    const token = req.cookies.access_token;
+    //const token = req.cookies.access_token;
+    //try getting token through cookies
+    let token: string | undefined = req.cookies && req.cookies.access_token;
+
     if (!token) {
+      //res.status(401).json({ message: "Unauthorized" });
+      const authHeader = req.headers["authorization"];
+      if(authHeader && authHeader.startsWith("Bearer ")){
+        token = authHeader.split(" ")[1];
+      }
+    }
+    //if token isn't found in either cookies or header return appropriate error message
+    if(!token) {
+      console.error("No token found in cookies or authorization header");
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
