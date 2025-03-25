@@ -116,17 +116,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { password: _, ...userData } = user;
 
     // Set the cookie and respond WITH JSON
+    // Set the cookie and respond WITH JSON
     res
       .cookie("access_token", token, {
         httpOnly: true,
         // sameSite, secure, etc., as needed
       })
       .status(200)
-      //include user id to be returned for iOS client, react frontend still works
       .json({
-        id: user.id,
-        username: user.username,
-        email: user.email,   
+        ...userData,   //login returning the token also, react front end should be fine
       token
     });
   } catch (err) {
