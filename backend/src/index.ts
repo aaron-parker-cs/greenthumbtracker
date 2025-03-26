@@ -55,7 +55,7 @@ app.use("/api/uom", uomRoutes);
 // Swagger -- API Documentation and routes testing
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
-const PORT = process.env.PORT || 8800;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+const PORT = Number(process.env.PORT) || 8800;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
