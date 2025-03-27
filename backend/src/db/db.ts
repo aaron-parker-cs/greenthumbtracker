@@ -35,7 +35,7 @@ export const AppDataSource = new DataSource({
   entities: [join(__dirname, "entities", "**", "*.{ts,js}")],
   migrations: [
     // For dev
-    join(__dirname, "migrations", "**", "*.{ts}"),
+    join(__dirname, "migrations", "**", "*.{ts,js}"),
     // For prod
     // join(__dirname, "..", "migrations", "**", "*.{js}")
   ],
