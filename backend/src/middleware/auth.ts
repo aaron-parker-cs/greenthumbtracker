@@ -107,7 +107,13 @@ export const validateRegister = async (
   }
 
   // Check if email is already in use
-  const user = await userRepository.findUserByEmail(email);
+  let user;
+  try {
+    user = await userRepository.findUserByEmail(email);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+    return;
+  }
   if (user) {
     res.status(400).json({ message: "Email already in use." });
     return;
