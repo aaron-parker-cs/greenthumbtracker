@@ -3,8 +3,7 @@ services:
   backend:
     container_name: backend
     image: ghcr.io/aaron-parker-cs/greenthumbtracker/greenthumb-backend:latest
-    restart:
-      - always
+    restart: always
     env_file:
       - .env
     environment:
