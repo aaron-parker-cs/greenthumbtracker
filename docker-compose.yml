@@ -1,28 +1,31 @@
 services:
+  # Note: This is for deployment, not development. For development, use docker-compose.dev.yml
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: greenthumb-backend
-    ports:
-      - "8800:8800"
+    container_name: backend
+    image: ghcr.io/aaron-parker-cs/greenthumbtracker/greenthumb-backend:latest
+    restart:
+      - always
     env_file:
       - .env
-    volumes:
-      - ./backend:/usr/src/app
     environment:
       - NODE_ENV=development
-    
+    networks:
+      default:
+        aliases:
+          - backend
+
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: greenthumb-frontend
+    container_name: frontend
+    image: ghcr.io/aaron-parker-cs/greenthumbtracker/greenthumb-frontend:latest
+    restart:
+      - always
     ports:
-      - "5173:5173"
+      - "80:80"
+      - "443:443"
     env_file:
       - .env
-    volumes:
-      - ./frontend:/usr/src/app
     environment:
       - NODE_ENV=development
+    volumes:
+      - ./ssl/cert.pem:/etc/nginx/ssl/cert.pem
+      - ./ssl/key.pem:/etc/nginx/ssl/key.pem                                                                  

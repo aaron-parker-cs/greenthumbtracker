@@ -5,6 +5,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "start": "nodemon ./src/index.ts",
+    "start:prod": "node ./dist/index.js",
     "test": "jest --testEnvironment=node --detectOpenHandles --runInBand tests",
     "build": "tsc",
     "typeorm": "typeorm-ts-node-commonjs",
