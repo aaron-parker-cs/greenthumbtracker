@@ -3,10 +3,15 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, UserState } from "../../redux/user/slice";
 import { api } from "../../redux/api";
+import { Plant } from "../../models/plant";
+import "../../styles/navbar.scss";
 
 const AppNavbar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: { user: UserState }) => state.user);
+  const selectedPlant = useSelector(
+    (state: { plant: { selectedPlant: Plant } }) => state.plant.selectedPlant
+  );
   const [logoutUser] = api.useLogoutMutation();
 
   const handleLogout = async () => {
@@ -32,6 +37,10 @@ const AppNavbar = () => {
         <Navbar.Brand as={Link} to="/" className="ms-3">
           GreenThumb Tracker
         </Navbar.Brand>
+
+        <Navbar.Text className="text-center flex-grow-1 show-selected-plant">
+          {selectedPlant ? selectedPlant.name : "No plant selected"}
+        </Navbar.Text>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" className="me-3" />
 

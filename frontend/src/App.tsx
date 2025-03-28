@@ -7,6 +7,7 @@ import AppFooter from "./components/common/AppFooter";
 import "./style.scss";
 import "react-toastify/dist/ReactToastify.css";
 import PlantPage from "./pages/PlantPage";
+import RecordsPage from "./pages/RecordsPage";
 import { ToastContainer } from "react-bootstrap";
 import VerifyEmail from "./pages/VerifyEmail";
 import VerifiedPage from "./pages/VerifiedPage";
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/plants",
         element: <PlantPage />,
+      },
+      {
+        path: "/records",
+        element: <RecordsPage />,
       },
     ],
   },
