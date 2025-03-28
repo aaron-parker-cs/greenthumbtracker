@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: greenthumb-backend
+    ports:
+      - "8800:8800"
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/usr/src/app
+    environment:
+      - NODE_ENV=development
+    
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: greenthumb-frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/usr/src/app
+    environment:
+      - NODE_ENV=development

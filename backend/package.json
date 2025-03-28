@@ -5,10 +5,11 @@
   "main": "./src/index.ts",
   "scripts": {
     "start": "nodemon ./src/index.ts",
+    "start:prod": "node ./dist/index.js",
     "test": "jest --testEnvironment=node --detectOpenHandles --runInBand tests",
     "build": "tsc",
     "typeorm": "typeorm-ts-node-commonjs",
-    "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -- -n",
+    "typeorm:generate": "typeorm-ts-node-commonjs migration:generate ./src/migrations/AutoMigration -d ./src/db/db.ts",
     "typeorm:run": "typeorm-ts-node-commonjs migration:run",
     "typeorm:revert": "typeorm-ts-node-commonjs migration:revert"
   },

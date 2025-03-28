@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 8800
 
 # Start the app
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:prod"]
