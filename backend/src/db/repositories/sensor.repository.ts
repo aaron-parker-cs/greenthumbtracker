@@ -1,50 +1,48 @@
 import { Repository } from "typeorm";
-import { SensorData } from "../entities/SensorData";
 import { AppDataSource } from "../db";
 import { Plant } from "../entities/Plant";
 
-export class SensorDataRepository {
-  private repo: Repository<SensorData>;
+export class RecordRepository {
+  private repo: Repository<any>;
 
-  constructor() {
-    this.repo = AppDataSource.getRepository(SensorData);
+  constructor(entity: any) {
+    this.repo = AppDataSource.getRepository(entity);
   }
 
   /**
-   * Save new sensor data
+   * Save new record data
    */
-  async saveSensorData(sensorData: Partial<SensorData>): Promise<SensorData> {
-    return await this.repo.save(sensorData);
+  async saveSensorData(recordData: Partial<any>): Promise<any> {
+    return await this.repo.save(recordData);
   }
 
   /**
    * Get the latest sensor data by plant ID
    */
-  async getSensorDataByPlant(plantId: number): Promise<SensorData[]> {
+  async getSensorDataByPlant(plantId: number): Promise<any[]> {
     return await this.repo.find({
       where: { plant: { id: plantId } },
-      order: { timestamp: "DESC" },
-      take: 10, 
+      order: { timestamp: "DESC" }, 
     });
   }
 
   /**
-   * Find sensor data by ID
+   * Find record by ID
    */
-  async findSensorDataById(id: number): Promise<SensorData | null> {
+  async findRecordById(id: number): Promise<any | null> {
     return await this.repo.findOne({ where: { id } });
   }
 
   /**
-   * Update sensor data record
+   * Update record
    */
-  async updateSensorData(
+  async updateRecord(
     id: number,
-    updatedFields: Partial<SensorData>
-  ): Promise<SensorData> {
-    const existingRecord = await this.findSensorDataById(id);
+    updatedFields: Partial<any>
+  ): Promise<any> {
+    const existingRecord = await this.findRecordById(id);
     if (!existingRecord) {
-      throw new Error(`Sensor data with id ${id} not found`);
+      throw new Error(`Record with id ${id} not found`);
     }
 
     Object.assign(existingRecord, updatedFields);
@@ -52,16 +50,22 @@ export class SensorDataRepository {
   }
 
   /**
-   * Delete sensor data record
+   * Delete record
    */
-  async deleteSensorData(id: number): Promise<void> {
-    const existingRecord = await this.findSensorDataById(id);
+  async deleteRecord(id: number): Promise<void> {
+    const existingRecord = await this.findRecordById(id);
     if (!existingRecord) {
-      throw new Error(`Sensor data with id ${id} not found`);
+      throw new Error(`Record with id ${id} not found`);
     }
 
     await this.repo.remove(existingRecord);
   }
 }
 
-export const sensorDataRepository = new SensorDataRepository();
+/**
+ * Export specific repositories for different record types
+ */
+
+export const genericRecordRepository = new RecordRepository(require("../entities/Record"));
+export const waterRecordRepository = new RecordRepository(require("../entities/WaterRecord"));
+export const growthRecordRepository = new RecordRepository(require("../entities/GrowthRecord"));
