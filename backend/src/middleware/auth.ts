@@ -25,12 +25,12 @@ export const verifyToken = (
     if (!token) {
       //res.status(401).json({ message: "Unauthorized" });
       const authHeader = req.headers["authorization"];
-      if(authHeader && authHeader.startsWith("Bearer ")){
+      if (authHeader && authHeader.startsWith("Bearer ")) {
         token = authHeader.split(" ")[1];
       }
     }
     //if token isn't found in either cookies or header return appropriate error message
-    if(!token) {
+    if (!token) {
       console.error("No token found in cookies or authorization header");
       res.status(401).json({ message: "Unauthorized" });
       return;
@@ -52,11 +52,11 @@ export const verifyToken = (
   }
 };
 
-export const validateRegister = (
+export const validateRegister = async (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): Promise<void> => {
   const { username, email, password } = req.body;
 
   // Check if all fields are provided
@@ -107,12 +107,17 @@ export const validateRegister = (
   }
 
   // Check if email is already in use
-  userRepository.findUserByEmail(email).then((user) => {
-    if (user) {
-      res.status(400).json({ message: "Email already in use." });
-      return;
-    }
-  });
+  let user;
+  try {
+    user = await userRepository.findUserByEmail(email);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+    return;
+  }
+  if (user) {
+    res.status(400).json({ message: "Email already in use." });
+    return;
+  }
 
   // All validations passed, proceed to the next middleware or controller
   next();
