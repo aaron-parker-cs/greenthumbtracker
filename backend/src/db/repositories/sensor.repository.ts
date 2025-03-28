@@ -12,14 +12,14 @@ export class RecordRepository {
   /**
    * Save new record data
    */
-  async saveSensorData(recordData: Partial<any>): Promise<any> {
+  async saveRecord(recordData: Partial<any>): Promise<any> {
     return await this.repo.save(recordData);
   }
 
   /**
    * Get the latest sensor data by plant ID
    */
-  async getSensorDataByPlant(plantId: number): Promise<any[]> {
+  async getRecordsByPlant(plantId: number): Promise<any[]> {
     return await this.repo.find({
       where: { plant: { id: plantId } },
       order: { timestamp: "DESC" }, 
