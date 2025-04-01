@@ -80,3 +80,8 @@ const PORT = Number(process.env.PORT) || 8800;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
+
+//for any invalid routes, catch all handler
+app.use((req, res) => {
+  res.status(404).json({message: `Route not found: ${req.originalUrl}`});
+});
