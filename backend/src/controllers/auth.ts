@@ -123,9 +123,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         // sameSite, secure, etc., as needed
       })
       .status(200)
+      //include user id in the return 
       .json({
-        ...userData,   //login returning the token also, react front end should be fine
-      token
+       id: user.id,
+       username: user.username,
+       email: user.email,
+       token
     });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
