@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       username
     );
     if (existingUser) {
-      res.status(409).json("User already exists!");
+      res.status(409).json({message:"User already exists!"});
       return;
     }
 
@@ -64,7 +64,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     res
       .status(200)
-      .json("User has been created. Please check your email to verify.");
+      .json({message:"User has been created. Please check your email to verify."});
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
-      res.status(400).json("Username or password missing!");
+      res.status(400).json({message:"Username or password missing!"});
       return;
     }
 
@@ -90,13 +90,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       .where("user.username = :username", { username })
       .getOne();
     if (!user) {
-      res.status(404).json("Username or password incorrect!");
+      res.status(404).json({message:"Username or password incorrect!"});
       return;
     }
 
     // Check if user's email is verified
     if (!user.isVerified) {
-      res.status(403).json("Please verify your email before logging in.");
+      res.status(403).json({message:"Please verify your email before logging in."});
       return;
     }
 
@@ -104,7 +104,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
       console.log("Password incorrect");
-      res.status(400).json("Username or password incorrect!");
+      res.status(400).json({message:"Username or password incorrect!"});
       return;
     }
 
@@ -122,8 +122,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         // sameSite, secure, etc., as needed
       })
       .status(200)
+      //include user id to be returned for iOS client, react frontend still works
       .json({
-        ...userData,   //login returning the token also, react front end should be fine
+        id: user.id,
+        username: user.username,
+        email: user.email,   
       token
     });
   } catch (err) {
@@ -141,7 +144,7 @@ export const logout = (req: Request, res: Response): void => {
       secure: true,
     })
     .status(200)
-    .json("User has been logged out.");
+    .json({message:"User has been logged out."});
 };
 
 /**
@@ -154,7 +157,7 @@ export const verifyEmail = async (
   try {
     const { token } = req.query;
     if (!token) {
-      res.status(400).json("Token missing!");
+      res.status(400).json({message:"Token missing!"});
       return;
     }
 
@@ -163,13 +166,13 @@ export const verifyEmail = async (
     });
 
     if (!user) {
-      res.status(404).json("Invalid token!");
+      res.status(404).json({message:"Invalid token!"});
       return;
     }
 
     // Check if token has expired
     if (user.verifyTokenExpires && user.verifyTokenExpires < new Date()) {
-      res.status(400).json("Token has expired!");
+      res.status(400).json({message:"Token has expired!"});
       return;
     }
 
@@ -179,7 +182,7 @@ export const verifyEmail = async (
     user.verifyTokenExpires = undefined;
     await AppDataSource.getRepository(User).save(user);
 
-    res.status(200).json("Email has been verified!");
+    res.status(200).json({message:"Email has been verified!"});
     return;
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -196,7 +199,7 @@ export const forgotPassword = async (
   try {
     const { email } = req.body;
     if (!email) {
-      res.status(400).json("Email missing!");
+      res.status(400).json({message:"Email missing!"});
       return;
     }
 
@@ -205,7 +208,7 @@ export const forgotPassword = async (
     });
 
     if (!user) {
-      res.status(404).json("User not found!");
+      res.status(404).json({message:"User not found!"});
       return;
     }
 
@@ -234,7 +237,7 @@ export const forgotPassword = async (
       htmlContent
     );
 
-    res.status(200).json("Password reset email has been sent.");
+    res.status(200).json({message:"Password reset email has been sent."});
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
@@ -250,7 +253,7 @@ export const resetPassword = async (
   try {
     const { token, password } = req.body;
     if (!token || !password) {
-      res.status(400).json("Reset Token or new password missing!");
+      res.status(400).json({message:"Reset Token or new password missing!"});
       return;
     }
 
@@ -259,13 +262,13 @@ export const resetPassword = async (
     });
 
     if (!user) {
-      res.status(404).json("Invalid token!");
+      res.status(404).json({message:"Invalid token!"});
       return;
     }
 
     // Check if token has expired
     if (user.resetPasswordExpires && user.resetPasswordExpires < new Date()) {
-      res.status(400).json("Token has expired!");
+      res.status(400).json({message:"Token has expired!"});
       return;
     }
 
@@ -279,7 +282,7 @@ export const resetPassword = async (
     user.resetPasswordExpires = undefined;
     await AppDataSource.getRepository(User).save(user);
 
-    res.status(200).json("Password has been reset!");
+    res.status(200).json({message:"Password has been reset!"});
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
