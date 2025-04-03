@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { Accordion, Table } from "react-bootstrap";
 import { Plant } from "../models/plant";
 import { GrowthRecord } from "../models/growth";
-import { WaterRecord } from "../models/water";
 import { api } from "../redux/api";
 import * as GrowthRecordSlice from "../redux/records/growthRecord";
 import "../styles/recordsPage.scss";
