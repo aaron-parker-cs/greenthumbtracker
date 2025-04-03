@@ -1,10 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from "typeorm";
-
 import { Plant } from "./plant";
 import { User } from "./user";
-
-
-
 
 @Entity()
 export class LightRecord {
@@ -25,9 +21,8 @@ export class LightRecord {
     date!: Date;
 
     @Column({ type: "float" })
-    light_intensity!: number;
+    light!: number;
 
     @CreateDateColumn()
-    recorded_at!: Date;
-
+    date!: Date;
 }

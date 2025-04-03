@@ -1,10 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from "typeorm";
-
 import { Plant } from "./plant";
 import { User } from "./user";
-
-
-
 
 @Entity()
 export class HumidityRecord {
@@ -23,9 +19,5 @@ export class HumidityRecord {
     humidity!: number;
 
     @CreateDateColumn()
-
     date!: Date;
-
-    recorded_at!: Date;
-
 }

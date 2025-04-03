@@ -1,9 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from "typeorm";
-
 import { Plant } from "./plant";
 import { User } from "./user";
-
-
 
 @Entity()
 export class TemperatureRecord {
@@ -22,9 +19,5 @@ export class TemperatureRecord {
     temperature!: number;
 
     @CreateDateColumn()
-
     date!: Date;
-
-    recorded_at!: Date;
-
 }
