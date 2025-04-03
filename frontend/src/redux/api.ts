@@ -4,6 +4,8 @@ import { Plant } from "../models/plant";
 import { Credential } from "../models/credential";
 import { GrowthRecord } from "../models/growth";
 import { WaterRecord } from "../models/water";
+import { ApiStatus } from "../models/status";
+import { OpenWeatherApiResponse } from "../models/weather";
 
 const baseUrl = `/api`;
 
@@ -13,8 +15,11 @@ export const api = createApi({
     baseUrl: baseUrl,
     credentials: "include",
   }),
-  tagTypes: ["Plants"],
+  tagTypes: ["Plants", "Weather"],
   endpoints: (builder) => ({
+    health: builder.query<ApiStatus, void>({
+      query: () => "/health",
+    }),
     login: builder.mutation<UserState, Credential>({
       query: (credentials: Credential) => ({
         url: "/auth/login",
@@ -57,6 +62,18 @@ export const api = createApi({
         method: "POST",
         body: { token, password },
       }),
+    }),
+    getWeather: builder.query<OpenWeatherApiResponse, void>({
+      query: () => "/weather",
+      providesTags: ["Weather"],
+    }),
+    setWeatherLocation: builder.mutation<void, { city: string }>({
+      query: ({ city }) => ({
+        url: "/weather/location/city",
+        method: "POST",
+        body: { city },
+      }),
+      invalidatesTags: ["Weather"],
     }),
     getPlants: builder.query<Plant[], void>({
       query: () => "/plants",
