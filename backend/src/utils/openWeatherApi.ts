@@ -23,8 +23,13 @@ export async function setUserLocation(
   }
 
   const data = await response.json();
-
-  userRepository.updateUserLocation(userId, data.coord.lat, data.coord.lon);
+  
+  if (data.length === 0) {
+    throw new Error("No geocode data found");
+  }
+  
+  const { lat, lon } = data[0];
+  userRepository.updateUserLocation(userId, lat, lon);
 }
 
 export async function getWeatherData(
