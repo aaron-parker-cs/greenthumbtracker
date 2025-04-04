@@ -1,7 +1,7 @@
 import { Equal, Repository } from "typeorm";
 import { TemperatureRecord } from "../entities/temperature_record";
 import { Plant } from "../entities/plant";
-import { User } from "../entities/user";  
+import { User } from "../entities/user";
 import { AppDataSource } from "../db";
 
 export class TemperatureRepository {
@@ -14,7 +14,9 @@ export class TemperatureRepository {
   /**
    * Find all temperature records for a particular plant.
    */
-  async findTemperatureRecordsByPlantId(plantId: number): Promise<TemperatureRecord[]> {
+  async findTemperatureRecordsByPlantId(
+    plantId: number
+  ): Promise<TemperatureRecord[]> {
     return this.repo.find({ where: { plant: Equal(plantId) } });
   }
 
@@ -23,18 +25,22 @@ export class TemperatureRepository {
    */
   async createTemperatureRecord(
     plantId: number,
-    userId: number,  
+    userId: number,
     date: Date,
     temperature: number
   ): Promise<TemperatureRecord> {
     const newTemperatureRecord = new TemperatureRecord();
-    
-    const plant = await this.repo.manager.findOne(Plant, { where: { id: plantId } });
+
+    const plant = await this.repo.manager.findOne(Plant, {
+      where: { id: plantId },
+    });
     if (!plant) {
       throw new Error(`Plant with id ${plantId} not found`);
     }
 
-    const user = await this.repo.manager.findOne(User, { where: { id: userId } });
+    const user = await this.repo.manager.findOne(User, {
+      where: { id: userId },
+    });
     if (!user) {
       throw new Error(`User with id ${userId} not found`);
     }
@@ -60,8 +66,12 @@ export class TemperatureRepository {
     const record = await this.repo.findOne({ where: { id } });
     if (!record) throw new Error(`Temperature record with id ${id} not found`);
 
-    const plant = await this.repo.manager.findOne(Plant, { where: { id: plantId } });
-    const user = await this.repo.manager.findOne(User, { where: { id: userId } });
+    const plant = await this.repo.manager.findOne(Plant, {
+      where: { id: plantId },
+    });
+    const user = await this.repo.manager.findOne(User, {
+      where: { id: userId },
+    });
 
     if (!plant) throw new Error(`Plant with id ${plantId} not found`);
     if (!user) throw new Error(`User with id ${userId} not found`);
@@ -71,7 +81,7 @@ export class TemperatureRepository {
     record.date = date;
     record.temperature = temperature;
 
-    return this.repo.save(temperatureRecord);
+    return this.repo.save(record);
   }
 
   /**
@@ -80,7 +90,7 @@ export class TemperatureRepository {
   async deleteTemperatureRecord(id: number): Promise<void> {
     const record = await this.repo.findOne({ where: { id } });
     if (!record) throw new Error(`Temperature record with id ${id} not found`);
-    await this.repo.remove(temperatureRecord);
+    await this.repo.remove(record);
   }
 }
 

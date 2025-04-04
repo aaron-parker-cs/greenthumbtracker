@@ -38,7 +38,15 @@ const AppNavbar = () => {
           GreenThumb Tracker
         </Navbar.Brand>
 
-        <Navbar.Text className="text-center flex-grow-1 show-selected-plant">
+        <Navbar.Text
+          className="text-center w-25 show-selected-plant"
+          style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        >
+          Selected Plant:{" "}
           {selectedPlant ? selectedPlant.name : "No plant selected"}
         </Navbar.Text>
 
@@ -57,6 +65,9 @@ const AppNavbar = () => {
             </Nav.Link>
             <Nav.Link as={Link} to="/records">
               Records
+            </Nav.Link>
+            <Nav.Link as={Link} to="/weather">
+              Weather
             </Nav.Link>
             {user.isAuthenticated ? (
               <Nav.Link as={Link} onClick={handleLogout} to="/login">

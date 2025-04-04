@@ -1,34 +1,22 @@
-import { Container, Button, ListGroup, Spinner } from "react-bootstrap";
-import { Drawer } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { Container } from "react-bootstrap";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import Chart from "../components/common/Chart";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { UserState } from "../redux/user/slice";
 import { api } from "../redux/api";
-import { useMemo } from "react";
 import {
   fetchPlantsFailure,
   fetchPlantsStart,
   fetchPlantsSuccess,
   selectPlant,
 } from "../redux/plant/slice";
-import { Plant } from "../models/plant";
 
 const Home = () => {
-  const [open, setOpen] = useState(false); // used for side nav bar
   const user = useSelector((state: { user: UserState }) => state.user);
   const { data: plants, isLoading, isError, error } = api.useGetPlantsQuery();
   const dispatch = useDispatch();
-
-  interface ToggleDrawer {
-    (newOpen: boolean): () => void;
-  }
-
-  const toggleDrawer: ToggleDrawer = (newOpen) => () => {
-    setOpen(newOpen);
-  };
 
   useEffect(() => {
     if (isLoading) {
@@ -43,35 +31,6 @@ const Home = () => {
       dispatch(fetchPlantsSuccess(plants));
     }
   }, [plants, dispatch, error, isError, isLoading]);
-
-  const handleSelectPlant = useCallback(
-    (plant: Plant) => {
-      dispatch(selectPlant(plant));
-      setOpen(false);
-    },
-    [dispatch]
-  );
-
-  const DrawerList = useMemo(
-    () => (
-      <Container style={{ width: "250px" }}>
-        <ListGroup>
-          {isLoading && <Spinner animation="border" />}
-          {isError && <p>{JSON.stringify(error)}</p>}
-          {!!plants &&
-            plants.map((plant, index) => (
-              <ListGroup.Item
-                key={index}
-                onClick={() => handleSelectPlant(plant)}
-              >
-                {`${index + 1} ${plant.name}`}
-              </ListGroup.Item>
-            ))}
-        </ListGroup>
-      </Container>
-    ),
-    [plants, handleSelectPlant, isLoading, isError, error]
-  );
 
   if (!user.isAuthenticated) {
     return <Navigate to="/login" />;
@@ -137,16 +96,6 @@ const Home = () => {
     >
       {" "}
       {/* bottom margin to keep from going under footer */}
-      <Button
-        variant="success"
-        onClick={toggleDrawer(true)}
-        style={{ position: "fixed" }}
-      >
-        <i className="bi bi-chevron-double-right"></i>
-      </Button>
-      <Drawer open={open} onClose={toggleDrawer(false)}>
-        {DrawerList}
-      </Drawer>
       <Container
         fluid
         className="d-inline-flex flex-wrap justify-content-around"
