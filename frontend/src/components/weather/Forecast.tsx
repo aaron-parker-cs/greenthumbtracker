@@ -36,21 +36,9 @@ const Forecast = () => {
                     minute: "2-digit",
                     timeZone: "America/Chicago",
                   })}{" "}
-                  - {day.main.temp} °F
+                  - {day.main.temp} °F - {day.weather[0].main}
                 </Accordion.Header>
                 <Accordion.Body>
-                  <p className="mb-1">
-                    Day:{" "}
-                    {new Date(
-                      (day.dt + weatherData.city.timezone) * 1000
-                    ).toLocaleDateString(undefined, {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      timeZone: "America/Chicago",
-                    })}
-                  </p>
                   <p className="mb-1">Temperature: {day.main.temp}°F</p>
                   <p className="mb-1">Feels Like: {day.main.feels_like}°F</p>
                   <p className="mb-1">
