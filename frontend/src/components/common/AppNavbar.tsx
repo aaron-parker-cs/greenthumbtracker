@@ -39,7 +39,7 @@ const AppNavbar = () => {
         </Navbar.Brand>
 
         <Navbar.Text
-          className="text-center w-100 show-selected-plant"
+          className="text-center w-25 show-selected-plant"
           style={{
             position: "absolute",
             left: "50%",

@@ -23,11 +23,11 @@ export async function setUserLocation(
   }
 
   const data = await response.json();
-  
+
   if (data.length === 0) {
     throw new Error("No geocode data found");
   }
-  
+
   const { lat, lon } = data[0];
   userRepository.updateUserLocation(userId, lat, lon);
 }
@@ -43,8 +43,6 @@ export async function getWeatherData(
       "Content-Type": "application/json",
     },
   });
-
-  console.log(response);
 
   if (!response.ok) {
     throw new Error("Failed to fetch weather data");
