@@ -11,10 +11,16 @@ export class SoilMoistureRepository {
     this.repo = AppDataSource.getRepository(SoilMoistureRecord);
   }
 
+  /**
+   * Find all soil moisture records for a particular plant.
+   */
   async findSoilMoistureRecordsByPlantId(plantId: number): Promise<SoilMoistureRecord[]> {
     return this.repo.find({ where: { plant: Equal(plantId) } });
   }
 
+  /**
+   * Create and save a new soil moisture record.
+   */
   async createSoilMoistureRecord(
     plantId: number,
     userId: number,  
@@ -39,6 +45,42 @@ export class SoilMoistureRepository {
     newSoilMoistureRecord.soilMoisture = soilMoisture;
 
     return this.repo.save(newSoilMoistureRecord);
+  }
+
+  /**
+   * Update a soil moisture record
+   */
+  async updateSoilMoistureRecord(
+    id: number,
+    plantId: number,
+    userId: number,
+    date: Date,
+    soilMoisture: number
+  ): Promise<SoilMoistureRecord> {
+    const record = await this.repo.findOne({ where: { id } });
+    if (!record) throw new Error(`Soil moisture record with id ${id} not found`);
+
+    const plant = await this.repo.manager.findOne(Plant, { where: { id: plantId } });
+    const user = await this.repo.manager.findOne(User, { where: { id: userId } });
+
+    if (!plant) throw new Error(`Plant with id ${plantId} not found`);
+    if (!user) throw new Error(`User with id ${userId} not found`);
+
+    record.plant = plant;
+    record.user = user;
+    record.date = date;
+    record.soil_moisture = soilMoisture;
+
+    return this.repo.save(soilMoistureRecord);
+  }
+
+  /**
+   * Delete a soil moisture record
+   */
+  async deleteSoilMoistureRecord(id: number): Promise<void> {
+    const record = await this.repo.findOne({ where: { id } });
+    if (!record) throw new Error(`Soil moisture record with id ${id} not found`);
+    await this.repo.remove(soilMoistureRecord);
   }
 }
 
