@@ -6,6 +6,7 @@ import { GrowthRecord } from "../models/growth";
 import { api } from "../redux/api";
 import * as GrowthRecordSlice from "../redux/records/growthRecord";
 import "../styles/recordsPage.scss";
+import GrowthRecordTable from "../components/records/GrowthRecordTable";
 
 const RecordsPage = () => {
   const selectedPlant = useSelector(
@@ -21,49 +22,6 @@ const RecordsPage = () => {
   // temperature record
   // humidity record
 
-  const dispatch = useDispatch();
-
-  const [isAddingGrowthRecord, setIsAddingGrowthRecord] = useState(false);
-  const [newGrowthRecord, setNewGrowthRecord] = useState({
-    id: 0,
-    created_: "",
-    height: "",
-  });
-
-  const handleNewGrowthRecord = () => {
-    setIsAddingGrowthRecord(true);
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewGrowthRecord({
-      ...newGrowthRecord,
-      [name]: value,
-    });
-  }
-
-  const handleSubmitNewGrowthRecord = () => {
-    setIsAddingGrowthRecord(false);
-    const [addGrowthRecordMutation] = api.useAddGrowthRecordMutation();
-    const growthRecord: GrowthRecord = {
-      id: 0,
-      created_: new Date(newGrowthRecord.created_),
-      height: Number(newGrowthRecord.height),
-      plant: selectedPlant.id,
-      uom: 3,
-      date: new Date(newGrowthRecord.created_),
-      updated_: new Date(),
-    };
-    let plantId = selectedPlant.id;
-    addGrowthRecordMutation({plantId, growthRecord});
-    dispatch(GrowthRecordSlice.addGrowthRecord(growthRecord));
-    setNewGrowthRecord({
-      id: 0,
-      created_: "",
-      height: "",
-    });
-  }
-
   return (
     <div className="page-container">
       <div className="d-flex w-100 mt-3">
@@ -77,91 +35,12 @@ const RecordsPage = () => {
       {selectedPlant ? (
         <Accordion defaultActiveKey="0" className="mt-4">
           {/* Growth Records Dropdown */}
-          {growthRecords && (
-            <Accordion.Item eventKey="0">
-              <Accordion.Header>Growth Records</Accordion.Header>
-              <Accordion.Body>
-                <Table striped bordered hover className="text-center">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Created At</th>
-                      <th>Height (cm)</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {growthRecords.map((record, index) => (
-                      <tr key={record.id}>
-                        <td>{index + 1}</td>
-                        <td>{record.created_.toLocaleDateString()}</td>
-                        <td>{record.height} cm</td>
-                        <td>
-                          <button className="btn btn-warning m-1">Edit</button>
-                          <button className="btn btn-danger m-1">Delete</button>
-                        </td>
-                      </tr>
-                    ))}
-                    {isAddingGrowthRecord ? (
-                      <tr>
-                        <td>
-                          <input
-                            type="number"
-                            name="id"
-                            value={growthRecords.length + 1}
-                            readOnly
-                            className="form-control"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="date"
-                            name="created_"
-                            value={newGrowthRecord.created_}
-                            onChange={handleInputChange}
-                            className="form-control"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            name="height"
-                            value={newGrowthRecord.height}
-                            onChange={handleInputChange}
-                            className="form-control"
-                            placeholder="Height in cm"
-                          />
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-success m-1"
-                            onClick={handleSubmitNewGrowthRecord}>
-                              Submit
-                          </button>
-                          <button
-                            className="btn btn-secondary m-1"
-                            onClick={() => setIsAddingGrowthRecord(false)}>
-                              Cancel
-                          </button>
-                        </td>
-                      </tr>
-                    ) : (
-                      <tr>
-                        <td colSpan={4}>
-                          <button
-                            className="btn btn-primary m-3 auto-align-end"
-                            onClick={handleNewGrowthRecord}
-                          >
-                            Add New Growth Record
-                          </button>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </Accordion.Body>
-            </Accordion.Item>
-          )}
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>Growth Records</Accordion.Header>
+            <Accordion.Body>
+              <GrowthRecordTable/>
+            </Accordion.Body>
+          </Accordion.Item>
 
           {/* Water Records Dropdown */}
           {waterRecords && (
