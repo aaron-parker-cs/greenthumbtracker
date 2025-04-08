@@ -12,9 +12,9 @@ const RecordsPage = () => {
     (state: { plant: { selectedPlant: Plant } }) => state.plant.selectedPlant
   );
 
-  const { data: growthRecords } = selectedPlant ? api.useGetGrowthRecordsQuery(selectedPlant.id) : { data: [] };
+  const { data: growthRecords } = api.useGetGrowthRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
   // use useEffect to update growthRecords when added. Make sure they are being added to database
-  const { data: waterRecords } = selectedPlant ? api.useGetWaterRecordsQuery(selectedPlant.id) : { data: [] };
+  const { data: waterRecords } = api.useGetWaterRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
   // add other records once implemented
   // light record
   // soil moisture record
