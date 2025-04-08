@@ -20,8 +20,7 @@ const GrowthRecordTable = () => {
     (state: { plant: { selectedPlant: Plant } }) => state.plant.selectedPlant
   );
 
-  const {data: growthRecords, isLoading, isError, error} = api.useGetGrowthRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
-  const { refetch } = api.useGetGrowthRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
+  const {data: growthRecords, isLoading, isError, error, refetch} = api.useGetGrowthRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
   // const [createRecord, {isLoading, isSuccess, isError}] = api.useAddGrowthRecordMutation();
   const [
     createRecord,
