@@ -1,10 +1,7 @@
-import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Accordion, Table } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { Accordion } from "react-bootstrap";
 import { Plant } from "../models/plant";
-import { GrowthRecord } from "../models/growth";
 import { api } from "../redux/api";
-import * as GrowthRecordSlice from "../redux/records/growthRecord";
 import "../styles/recordsPage.scss";
 import GrowthRecordTable from "../components/records/GrowthRecordTable";
 
@@ -13,7 +10,6 @@ const RecordsPage = () => {
     (state: { plant: { selectedPlant: Plant } }) => state.plant.selectedPlant
   );
 
-  const { data: growthRecords } = api.useGetGrowthRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
   // use useEffect to update growthRecords when added. Make sure they are being added to database
   const { data: waterRecords } = api.useGetWaterRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
   // add other records once implemented

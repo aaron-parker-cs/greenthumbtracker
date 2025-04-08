@@ -8,7 +8,6 @@ import {
   fetchGrowthRecordsStart,
   fetchGrowthRecordsSuccess,
   fetchGrowthRecordsFailure,
-  selectGrowthRecord,
   addGrowthRecord,
   removeGrowthRecord,
   updateGrowthRecord,
@@ -27,7 +26,6 @@ const GrowthRecordTable = () => {
     createRecord,
     {
       isSuccess: addSuccess,
-      isLoading: addInProgress,
       isError: addError,
       error: addErrorDetails,
       reset: addReset,
@@ -39,7 +37,6 @@ const GrowthRecordTable = () => {
     updateRecord,
     {
       isSuccess: updateSuccess,
-      isLoading: updateInProgress,
       isError: updateError,
       error: updateErrorDetails,
       reset: updateReset,
@@ -50,7 +47,6 @@ const GrowthRecordTable = () => {
     deleteRecord,
     {
       isSuccess: deleteSuccess,
-      isLoading: deleteInProgress,
       isError: deleteError,
       error: deleteErrorDetails,
       reset: deleteReset,
