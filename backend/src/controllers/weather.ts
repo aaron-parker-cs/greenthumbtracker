@@ -36,13 +36,13 @@ export const setLocation = async (req: Request, res: Response) => {
       return;
     }
 
-    const { latitude, longitude } = req.body;
+    const { city, latitude, longitude } = req.body;
     if (!latitude || !longitude) {
       res.status(400).json({ message: "Latitude and longitude are required." });
       return;
     }
 
-    await userRepository.updateUserLocation(userId, latitude, longitude);
+    await userRepository.updateUserLocation(userId, city, latitude, longitude);
     res.status(200).json({ message: "Location updated successfully." });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -68,5 +68,23 @@ export const setLocationByCity = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Location updated successfully." });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
+  }
+};
+
+export const getUserCity = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+
+    const city = await userRepository.getUserCityById(userId);
+    if (!city) {
+      res.status(404).json({ message: "City not found" });
+      return;
+    }
+
+    res.status(200).json({ city });
+    return;
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+    return;
   }
 };
