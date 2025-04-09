@@ -21,7 +21,7 @@ export async function sendEmail(
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const emailTracking = await emailTrackingRepository.findByDate(today);
-  if (emailTracking && emailTracking.count >= 20) {
+  if (emailTracking && emailTracking.count >= 100) {
     throw new Error("Daily email limit reached");
   } else if (emailTracking) {
     emailTracking.count++;
