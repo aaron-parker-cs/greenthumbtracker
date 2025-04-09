@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { humidityRepository } from "../db/repositories/humidity_repository";
+import { uomRepository } from "../db/repositories/unit.repository";
 
 export const getHumidityRecords = async (req: Request, res: Response): Promise<void> => {
   const plantId = Number(req.params.plantId);
@@ -13,7 +14,7 @@ export const getHumidityRecords = async (req: Request, res: Response): Promise<v
 
 export const createHumidityRecord = async (req: Request, res: Response): Promise<void> => {
   const plantId = Number(req.params.plantId);
-  const { date, humidity } = req.body;
+  const { date, humidity, uomId } = req.body;
   const userId = (req as any).userId;
 
   if (!userId) {
@@ -22,7 +23,13 @@ export const createHumidityRecord = async (req: Request, res: Response): Promise
   }
 
   try {
-    await humidityRepository.createHumidityRecord(plantId, userId, new Date(date), humidity);
+    const uom = await uomRepository.findUomById(uomId);
+    if (!uom) {
+      res.status(400).json({ message: "Unit of measure not found." });
+      return;
+    }
+
+    await humidityRepository.createHumidityRecord(plantId, userId, new Date(date), humidity, uom);
     res.status(201).json({ message: "New humidity record successfully added." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -32,7 +39,7 @@ export const createHumidityRecord = async (req: Request, res: Response): Promise
 export const updateHumidityRecord = async (req: Request, res: Response): Promise<void> => {
   const recordId = Number(req.params.id);
   const plantId = Number(req.params.plantId);
-  const { date, humidity } = req.body;
+  const { date, humidity, uomId } = req.body;
   const userId = (req as any).userId;
 
   if (!userId) {
@@ -41,7 +48,13 @@ export const updateHumidityRecord = async (req: Request, res: Response): Promise
   }
 
   try {
-    await humidityRepository.updateHumidityRecord(recordId, plantId, new Date(date), humidity);
+    const uom = await uomRepository.findUomById(uomId);
+    if (!uom) {
+      res.status(400).json({ message: "Unit of measure not found." });
+      return;
+    }
+
+    await humidityRepository.updateHumidityRecord(recordId, plantId, new Date(date), humidity), uom;
     res.status(200).json({ message: "Humidity record successfully updated." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });

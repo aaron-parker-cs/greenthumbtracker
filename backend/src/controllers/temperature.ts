@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { temperatureRepository } from "../db/repositories/temperature_repository";
+import { uomRepository } from "../db/repositories/unit.repository";
 
 export const fetchTemperatureRecords = async (req: Request, res: Response) => {
   try {
@@ -12,20 +13,26 @@ export const fetchTemperatureRecords = async (req: Request, res: Response) => {
 };
 
 export const logTemperatureRecord = async (req: Request, res: Response) => {
-  try {
     const userId = (req as any).userId;
     if (!userId) {
       return res.status(400).json({ message: "User authentication required." });
     }
 
     const plantId = Number(req.params.plantId);
-    const { date, temperature } = req.body;
+    const { date, temperature, uomId } = req.body;
+
+    try{
+      const uom = await uomRepository.findUomById(uomId);
+    if (!uom) {
+      return res.status(400).json({ message: "Unit of measure not found." });
+    }
 
     await temperatureRepository.createTemperatureRecord(
       plantId,
       userId,
       new Date(date),
-      temperature
+      temperature,
+      uom
     );
 
     res.status(201).json({ message: "Temperature record successfully added." });
@@ -38,18 +45,24 @@ export const modifyTemperatureRecord = async (req: Request, res: Response) => {
   try {
     const recordId = Number(req.params.id);
     const plantId = Number(req.params.plantId);
-    const { date, temperature } = req.body;
+    const { date, temperature, uomId } = req.body;
 
     const userId = (req as any).userId;
     if (!userId) {
       return res.status(400).json({ message: "User authentication required." });
     }
 
+    const uom = await uomRepository.findUomById(uomId);
+    if (!uom) {
+      return res.status(400).json({ message: "Unit of measure not found." });
+    }
+
     await temperatureRepository.updateTemperatureRecord(
       recordId,
       plantId,
       new Date(date),
-      temperature
+      temperature,
+      uom
     );
 
     res.status(200).json({ message: "Temperature record successfully updated." });
