@@ -29,7 +29,7 @@ export const createSoilMoistureRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    await soilMoistureRepository.createSoilMoistureRecord(plantId, userId, new Date(date), soilMoisture, uom);
+    await soilMoistureRepository.createSoilMoistureRecord(plantId, userId, new Date(date), soilMoisture);
     res.status(201).json({ message: "Soil moisture record created successfully." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -54,7 +54,7 @@ export const updateSoilMoistureRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    await soilMoistureRepository.updateSoilMoistureRecord(id, plantId, new Date(date), soilMoisture, uom);
+    await soilMoistureRepository.updateSoilMoistureRecord(id, plantId, userId, new Date(date), soilMoisture);
     res.status(200).json({ message: "Soil moisture record updated successfully." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });

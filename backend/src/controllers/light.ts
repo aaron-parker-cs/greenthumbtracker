@@ -29,7 +29,7 @@ export const createLightRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    await lightRepository.createLightRecord(plantId, userId, new Date(date), light, uom);
+    await lightRepository.createLightRecord(plantId, userId, new Date(date), light);
     res.status(201).json({ message: "Light record successfully created." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -54,7 +54,7 @@ export const updateLightRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    await lightRepository.updateLightRecord(id, plantId, new Date(date), light, uom);
+    await lightRepository.updateLightRecord(id, plantId, userId, new Date(date), light);
     res.status(200).json({ message: "Light record updated successfully." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });

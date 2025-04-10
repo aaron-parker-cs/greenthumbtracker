@@ -32,7 +32,6 @@ export const logTemperatureRecord = async (req: Request, res: Response) => {
       userId,
       new Date(date),
       temperature,
-      uom
     );
 
     res.status(201).json({ message: "Temperature record successfully added." });
@@ -60,9 +59,9 @@ export const modifyTemperatureRecord = async (req: Request, res: Response) => {
     await temperatureRepository.updateTemperatureRecord(
       recordId,
       plantId,
+      userId,
       new Date(date),
       temperature,
-      uom
     );
 
     res.status(200).json({ message: "Temperature record successfully updated." });

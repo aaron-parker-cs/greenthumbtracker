@@ -29,7 +29,7 @@ export const createHumidityRecord = async (req: Request, res: Response): Promise
       return;
     }
 
-    await humidityRepository.createHumidityRecord(plantId, userId, new Date(date), humidity, uom);
+    await humidityRepository.createHumidityRecord(plantId, userId, new Date(date), humidity);// might add uom later
     res.status(201).json({ message: "New humidity record successfully added." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -54,7 +54,7 @@ export const updateHumidityRecord = async (req: Request, res: Response): Promise
       return;
     }
 
-    await humidityRepository.updateHumidityRecord(recordId, plantId, new Date(date), humidity), uom;
+    await humidityRepository.updateHumidityRecord(recordId, plantId, userId, new Date(date), humidity);
     res.status(200).json({ message: "Humidity record successfully updated." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
