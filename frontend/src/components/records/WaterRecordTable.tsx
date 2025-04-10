@@ -2,25 +2,24 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import { Plant } from '../../models/plant';
-import { GrowthRecord } from '../../models/growth';
+import { WaterRecord } from '../../models/water';
 import { api } from '../../redux/api';
 import {
-  fetchGrowthRecordsStart,
-  fetchGrowthRecordsSuccess,
-  fetchGrowthRecordsFailure,
-  addGrowthRecord,
-  removeGrowthRecord,
-  updateGrowthRecord,
-} from '../../redux/records/growthRecord';
+  fetchWaterRecordsStart,
+  fetchWaterRecordsSuccess,
+  fetchWaterRecordsFailure,
+  addWaterRecord,
+  removeWaterRecord,
+  updateWaterRecord,
+} from '../../redux/records/waterRecord';
 import { toast } from 'react-toastify';
 
-const GrowthRecordTable = () => {
+const WaterRecordTable = () => {
   const selectedPlant = useSelector(
     (state: { plant: { selectedPlant: Plant } }) => state.plant.selectedPlant
   );
 
-  const {data: growthRecords, isLoading, isError, error, refetch} = api.useGetGrowthRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
-  // const [createRecord, {isLoading, isSuccess, isError}] = api.useAddGrowthRecordMutation();
+  const {data: waterRecords, isLoading, isError, error, refetch} = api.useGetWaterRecordsQuery(selectedPlant?.id, { skip: !selectedPlant });
   const [
     createRecord,
     {
@@ -29,7 +28,7 @@ const GrowthRecordTable = () => {
       error: addErrorDetails,
       reset: addReset,
     },
-  ] = api.useAddGrowthRecordMutation();
+  ] = api.useAddWaterRecordMutation();
   const dispatch = useDispatch();
 
   const [
@@ -40,7 +39,7 @@ const GrowthRecordTable = () => {
       error: updateErrorDetails,
       reset: updateReset,
     },
-  ] = api.useUpdateGrowthRecordMutation();
+  ] = api.useUpdateWaterRecordMutation();
 
   const [
     deleteRecord,
@@ -50,104 +49,104 @@ const GrowthRecordTable = () => {
       error: deleteErrorDetails,
       reset: deleteReset,
     },
-  ] = api.useDeleteGrowthRecordMutation();
+  ] = api.useDeleteWaterRecordMutation();
 
   useEffect(() => {
     if(isLoading) {
-      dispatch(fetchGrowthRecordsStart());
+      dispatch(fetchWaterRecordsStart());
     }
     if(isError) {
       console.log(error);
-      dispatch(fetchGrowthRecordsFailure(error as string));
+      dispatch(fetchWaterRecordsFailure(error as string));
     }
-    if(growthRecords) {
-      dispatch(fetchGrowthRecordsSuccess(growthRecords));
+    if(waterRecords) {
+      dispatch(fetchWaterRecordsSuccess(waterRecords));
     }
-  }, [growthRecords, dispatch, error, isError, isLoading]);
+  }, [waterRecords, dispatch, error, isError, isLoading]);
 
   useEffect(() => {
     if(addSuccess){
-      toast.success("Growth record added successfully!");
+      toast.success("Water record added successfully!");
       addReset();
     }
     if(addError){
-      toast.error("Error adding growth record: " + addErrorDetails);
+      toast.error("Error adding water record: " + addErrorDetails);
       addReset();
     }
   }, [addSuccess, addReset, addError, addErrorDetails]);
 
   useEffect(() => {
     if(updateSuccess){
-      toast.success("Growth record updated successfully!");
+      toast.success("Water record updated successfully!");
       updateReset();
       setIsEditingRecordId(null);
       refetch();
     }
     if(updateError){
-      toast.error("Error updating growth record: " + updateErrorDetails);
+      toast.error("Error updating water record: " + updateErrorDetails);
       updateReset();
     }
   }, [updateSuccess, updateReset, updateError, updateErrorDetails]);
 
   useEffect(() => {
     if(deleteSuccess){
-      toast.success("Growth record deleted successfully!");
+      toast.success("Water record deleted successfully!");
       deleteReset();
     }
     if(deleteError){
-      toast.error("Error deleting growth record: " + deleteErrorDetails);
+      toast.error("Error deleting water record: " + deleteErrorDetails);
       deleteReset();
     }
   }, [deleteSuccess, deleteReset, deleteError, deleteErrorDetails]);
 
-  const [isAddingGrowthRecord, setIsAddingGrowthRecord] = useState(false);
-  const [newGrowthRecord, setNewGrowthRecord] = useState({
+  const [isAddingWaterRecord, setIsAddingWaterRecord] = useState(false);
+  const [newWaterRecord, setNewWaterRecord] = useState({
     id: 0,
     created_: "",
-    height: "",
+    amount: "",
   });
   const [isEditingRecordId, setIsEditingRecordId] = useState<number | null>(null);
-  const [editedRecord, setEditedRecord] = useState<GrowthRecord | null>(null);
+  const [editedRecord, setEditedRecord] = useState<WaterRecord | null>(null);
 
-  const handleNewGrowthRecord = () => {
-    setIsAddingGrowthRecord(true);
+  const handleNewWaterRecord = () => {
+    setIsAddingWaterRecord(true);
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewGrowthRecord({
-      ...newGrowthRecord,
+    setNewWaterRecord({
+      ...newWaterRecord,
       [name]: value,
     });
   }
 
-  const handleSubmitNewGrowthRecord = async () => {
-    setIsAddingGrowthRecord(false);
-    const growthRecord: GrowthRecord = {
+  const handleSubmitNewWaterRecord = async () => {
+    setIsAddingWaterRecord(false);
+    const waterRecord: WaterRecord = {
       id: 0,
-      created_: new Date(newGrowthRecord.created_),
-      height: Number(newGrowthRecord.height),
+      created_: new Date(newWaterRecord.created_),
+      amount: Number(newWaterRecord.amount),
       plant: selectedPlant.id,
-      uom: 3,
-      date: new Date(newGrowthRecord.created_),
+      uom: 6,
+      date: new Date(newWaterRecord.created_),
       updated_: new Date(),
     };
 
     try{
-      await createRecord({plantId: selectedPlant.id, growthRecord});
-      dispatch(addGrowthRecord(growthRecord));
-      setNewGrowthRecord({
+      await createRecord({plantId: selectedPlant.id, waterRecord});
+      dispatch(addWaterRecord(waterRecord));
+      setNewWaterRecord({
         id: 0,
         created_: "",
-        height: "",
+        amount: "",
       });
       refetch(); // should be a better way to update table without refreshing than this
     } catch(error){
-      console.error("Error creating growth record:", error);
+      console.error("Error creating water record:", error);
     }
   }
 
-  const handleEditClick = (record: GrowthRecord) => {
+  const handleEditClick = (record: WaterRecord) => {
     setIsEditingRecordId(record.id);
     setEditedRecord({...record});
   }
@@ -157,7 +156,7 @@ const GrowthRecordTable = () => {
     if(editedRecord){
       setEditedRecord({
         ...editedRecord,
-        [name]: name === "height" ? Number(value) : value,
+        [name]: name === "amount" ? Number(value) : value,
       });
     }
   };
@@ -165,20 +164,20 @@ const GrowthRecordTable = () => {
   const handleSubmitEditRecord = async () => {
     if(editedRecord){
       try {
-        await updateRecord({plantId: selectedPlant.id, growthRecord: editedRecord});
-        dispatch(updateGrowthRecord(editedRecord));
+        await updateRecord({plantId: selectedPlant.id, waterRecord: editedRecord});
+        dispatch(updateWaterRecord(editedRecord));
         setEditedRecord(null);
         setIsEditingRecordId(null);
         refetch(); // should be a better way to update table without refreshing than this
       } catch (error) {
-        console.error("Error updating growth record:", error);
+        console.error("Error updating water record:", error);
       }
     }
   };
 
-  const onDelete = async (id: number) => {
-    await deleteRecord({plantId: selectedPlant.id, growthRecordId: id});
-    dispatch(removeGrowthRecord(id.toString()));
+  const onDelete = (id: number) => {
+    deleteRecord({plantId: selectedPlant.id, waterRecordId: id});
+    dispatch(removeWaterRecord(id.toString()));
     refetch(); // should be a better way to update table without refreshing than this
   }
 
@@ -188,12 +187,12 @@ const GrowthRecordTable = () => {
         <tr>
           <th>#</th>
           <th>Created At</th>
-          <th>Height (cm)</th>
+          <th>Amount (ml)</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        {growthRecords?.map((record, index) => (
+        {waterRecords?.map((record, index) => (
           <tr key={record.id}>
             {isEditingRecordId === record.id ? (
               <>
@@ -210,11 +209,11 @@ const GrowthRecordTable = () => {
                 <td>
                   <input
                     type="number"
-                    name="height"
-                    value={editedRecord?.height ?? ""}
+                    name="amount"
+                    value={editedRecord?.amount ?? ""}
                     onChange={handleEditInputChange}
                     className="form-control"
-                    placeholder="Height in cm"
+                    placeholder="Amount in ml"
                   />
                 </td>
                 <td>
@@ -234,7 +233,7 @@ const GrowthRecordTable = () => {
                 <>
                   <td>{index + 1}</td>
                   <td>{new Date(record.created_).toLocaleDateString()}</td>
-                  <td>{record.height} cm</td>
+                  <td>{record.amount} ml</td>
                   <td>
                     <button 
                       className="btn btn-warning m-1"
@@ -253,13 +252,13 @@ const GrowthRecordTable = () => {
             
           </tr>
         ))}
-        {isAddingGrowthRecord ? (
+        {isAddingWaterRecord ? (
           <tr>
             <td>
               <input
                 type="number"
                 name="id"
-                value={(growthRecords?.length ?? 0) + 1}
+                value={(waterRecords?.length ?? 0) + 1}
                 readOnly
                 className="form-control"
               />
@@ -268,7 +267,7 @@ const GrowthRecordTable = () => {
               <input
                 type="date"
                 name="created_"
-                value={newGrowthRecord.created_}
+                value={newWaterRecord.created_}
                 onChange={handleInputChange}
                 className="form-control"
               />
@@ -276,22 +275,22 @@ const GrowthRecordTable = () => {
             <td>
               <input
                 type="number"
-                name="height"
-                value={newGrowthRecord.height}
+                name="amount"
+                value={newWaterRecord.amount}
                 onChange={handleInputChange}
                 className="form-control"
-                placeholder="Height in cm"
+                placeholder="Amount in ml"
               />
             </td>
             <td>
               <button
                 className="btn btn-success m-1"
-                onClick={handleSubmitNewGrowthRecord}>
+                onClick={handleSubmitNewWaterRecord}>
                   Submit
               </button>
               <button
                 className="btn btn-secondary m-1"
-                onClick={() => setIsAddingGrowthRecord(false)}>
+                onClick={() => setIsAddingWaterRecord(false)}>
                   Cancel
               </button>
             </td>
@@ -301,8 +300,8 @@ const GrowthRecordTable = () => {
             <td colSpan={4}>
               <button
                 className="btn btn-primary m-3 auto-align-end"
-                onClick={handleNewGrowthRecord}>
-                  Add Growth Record
+                onClick={handleNewWaterRecord}>
+                  Add Water Record
               </button>
             </td>
           </tr>
@@ -312,4 +311,4 @@ const GrowthRecordTable = () => {
   );
 }
 
-export default GrowthRecordTable;
+export default WaterRecordTable;

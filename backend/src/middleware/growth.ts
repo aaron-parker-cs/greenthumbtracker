@@ -10,7 +10,7 @@ export const validateGrowth = async (
   // Check if all fields are provided
   const { height, date, uomId } = req.body;
   const plantId = req.params.plantId;
-
+  console.log(req.body);
   if (!plantId || !height) {
     res.status(400).json({
       message:
