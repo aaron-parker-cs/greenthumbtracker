@@ -72,6 +72,30 @@ export const validateWater = async (
     }
   }
 
+  // Check if plant exists in the database
+  try {
+    const plant = await plantRepository.findPlantById(Number(plantId));
+    if (!plant) {
+      res.status(400).json({ message: `Plant ${plantId} not found.` });
+      return;
+    }
+
+    // Check if the plant belongs to the user
+    const userId = (req as any).userId;
+    if (plant.user.id !== userId) {
+      res.status(400).json({
+        message: `Plant ${plantId} does not belong to user ${userId}.`,
+      });
+      return;
+    }
+
+    // Proceed to next function
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+    return;
+  }
+
   // Proceed to next function
   next();
 };
