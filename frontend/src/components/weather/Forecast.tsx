@@ -8,6 +8,8 @@ const Forecast = () => {
     error,
   } = api.useGetWeatherQuery();
 
+  const { data: userLocationData } = api.useGetUserLocationQuery();
+
   return (
     <div className="d-flex flex-column align-items-center">
       {isWeatherLoading ? (
@@ -20,7 +22,15 @@ const Forecast = () => {
         </p>
       ) : weatherData ? (
         <div className="w-100 mx-auto" style={{ maxWidth: "800px" }}>
-          <h2 className="h4 fw-bold mb-4">5-Day Forecast</h2>
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3 text-center text-md-start">
+            <h2 className="h4 fw-bold mb-0">5-Day Forecast</h2>
+            <h2 className="h6 fw-normal mb-0">
+              City: {userLocationData?.city || "Unknown"}
+            </h2>
+            <h2 className="h6 fw-normal mb-0">
+              Closest Reporting Station: {weatherData.city.name}
+            </h2>
+          </div>
           <Accordion>
             {weatherData.list.map((day, index) => (
               <Accordion.Item eventKey={index.toString()} key={index}>

@@ -5,7 +5,7 @@ import { Credential } from "../models/credential";
 import { GrowthRecord } from "../models/growth";
 import { WaterRecord } from "../models/water";
 import { ApiStatus } from "../models/status";
-import { OpenWeatherApiResponse } from "../models/weather";
+import { LocationData, OpenWeatherApiResponse } from "../models/weather";
 
 const baseUrl = `/api`;
 
@@ -74,6 +74,10 @@ export const api = createApi({
         body: { city },
       }),
       invalidatesTags: ["Weather"],
+    }),
+    getUserLocation: builder.query<LocationData, void>({
+      query: () => "/weather/location/city",
+      providesTags: ["Weather"],
     }),
     getPlants: builder.query<Plant[], void>({
       query: () => "/plants",

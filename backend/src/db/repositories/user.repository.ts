@@ -93,16 +93,26 @@ export class UserRepository {
    */
   async updateUserLocation(
     userId: number,
+    city: string,
     latitude: number,
     longitude: number
   ): Promise<User> {
     const user = await this.repo.findOneBy({ id: userId });
     if (!user) throw new Error("User not found");
+    user.city = city;
     user.latitude = latitude;
     user.longitude = longitude;
     return this.repo.save(user);
   }
 
+  /**
+   * Get a user's city by their id
+   */
+  async getUserCityById(userId: number): Promise<string | null> {
+    const user = await this.repo.findOneBy({ id: userId });
+    if (!user) throw new Error("User not found");
+    return user.city ?? null;
+  }
   /**
    * Set a user's last lowest temperature
    */
