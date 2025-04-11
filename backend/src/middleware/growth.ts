@@ -10,7 +10,10 @@ export const validateGrowth = async (
   // Check if all fields are provided
   const { height, date, uomId } = req.body;
   const plantId = req.params.plantId;
-
+  if (process.env.NODE_ENV !== "production") {
+    const sanitizedBody = { ...req.body, sensitiveField: "REDACTED" }; // Replace 'sensitiveField' with actual sensitive keys
+    console.log("Request body:", sanitizedBody);
+  }
   if (!plantId || !height) {
     res.status(400).json({
       message:
