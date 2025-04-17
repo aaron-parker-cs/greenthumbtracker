@@ -27,7 +27,9 @@ const router = express.Router();
  *       200:
  *         description: Returns an array of temperature record objects for a plant
  */
-router.get("/:plantId", verifyToken, fetchTemperatureRecords);
+router.get("/:plantId", verifyToken,async (req, res) => {
+  await fetchTemperatureRecords(req, res);
+});
 
 /**
  * @openapi
@@ -60,7 +62,9 @@ router.get("/:plantId", verifyToken, fetchTemperatureRecords);
  *       201:
  *         description: Created a new temperature record
  */
-router.post("/:plantId", verifyToken, validateTemperature, logTemperatureRecord);
+router.post("/:plantId", verifyToken, validateTemperature, async (req, res) => {
+  await logTemperatureRecord(req, res);
+});
 
 /**
  * @openapi
@@ -98,7 +102,9 @@ router.post("/:plantId", verifyToken, validateTemperature, logTemperatureRecord)
  *       200:
  *         description: Updated the temperature record
  */
-router.put("/:plantId/:id", verifyToken, validateTemperature, modifyTemperatureRecord);
+router.put("/:plantId/:id", verifyToken, validateTemperature, async (req, res) => {
+  await modifyTemperatureRecord(req, res);
+});
 
 /**
  * @openapi
@@ -122,6 +128,8 @@ router.put("/:plantId/:id", verifyToken, validateTemperature, modifyTemperatureR
  *       200:
  *         description: Deleted the temperature record
  */
-router.delete("/:plantId/:id", verifyToken, removeTemperatureRecord);
+router.delete("/:plantId/:id", verifyToken, async (req, res) => {
+  await removeTemperatureRecord(req, res);
+});
 
 export default router;
