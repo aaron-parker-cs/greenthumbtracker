@@ -33,7 +33,7 @@ interface GenericRecordTableProps {
   ApiUpdateRecord: () => [
     updateRecord: (plantId: number, record: any) => Promise<any>,
     {
-      isSucess: boolean;
+      isSuccess: boolean;
       isError: boolean;
       error: string | null;
       reset: () => void;
@@ -167,7 +167,11 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
+    const { name, value } = e.target;
+    setNewRecord({
+      ...newRecord,
+      [name]: value,
+    });
   };
 
   const handleSubmitNewRecord = async () => {
@@ -175,7 +179,8 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
   };
 
   const handleEditClick = (record: any) => {
-
+    setIsEditingRecordId(record.id);
+    setEditedRecord({...record});
   };
 
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,6 +206,125 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
           <th>Actions</th>
         </tr>
       </thead>
+      <tbody>
+        {records?.map((record, index) => (
+          <tr key={record.id}>
+            {isEditingRecordId === record.id ? (
+              <>
+                <td>{index + 1}</td>
+                <td>
+                  <input
+                    type="date"
+                    name="created_"
+                    value={new Date(editedRecord?.created_ ?? "").toISOString().split("T")[0]}
+                    onChange={handleEditInputChange}
+                    className="form-control"
+                  />
+                </td>
+                <td>
+                  {/* TODO get record value here, not always height 
+                      same with placeholder value*/} 
+                  <input
+                    type="number"
+                    name="value"
+                    value={editedRecord?.height ?? ""} 
+                    onChange={handleEditInputChange}
+                    placeholder="Height in cm"
+                  />
+                </td>
+                <td>
+                  <button
+                    className="btn btn-success m-1"
+                    onClick={handleSubmitEditRecord}>
+                      Submit
+                  </button>
+                  <button
+                    className="btn btn-secondary m-1"
+                    onClick={() => setIsEditingRecordId(null)}>
+                      Cancel
+                  </button>
+                </td>
+              </>
+            ) : (
+              <>
+                <td>{index + 1}</td>
+                <td>{new Date(record.created_).toLocaleDateString()}</td>
+                {/* TODO get record value here, not always height 
+                    same with placeholder value*/} 
+                <td>{record.height} cm</td>
+                <td>
+                  <button
+                    className="btn btn-warning m-1"
+                    onClick={() => handleEditClick(record)}>
+                      Edit
+                  </button>
+                  <button
+                    className="btn btn-danger m-1"
+                    onClick={() => onDelete(record.id)}>
+                      Delete
+                  </button>
+                </td>
+              </>
+            )}
+          </tr>
+        ))}
+        {isAddingRecord ? (
+          <tr>
+            <td>
+              <input
+                type="number"
+                name="id"
+                value={(records?.length ?? 0) + 1}
+                readOnly
+                className="form-control"
+              />
+            </td>
+            <td>
+              <input
+                type="date"
+                name="created_"
+                value={newRecord.created_}
+                onChange={handleInputChange}
+                className="form-control"
+              />
+            </td>
+            <td>
+              {/* TODO get record value here, not always height 
+                  same with placeholder value*/} 
+              <input
+                type="number"
+                name="height"
+                value={newRecord.height}
+                onChange={handleInputChange}
+                className="form-control"
+                placeholder="Height in cm"
+              />
+            </td>
+            <td>
+              <button
+                className="btn btn-success m-1"
+                onClick={handleSubmitNewRecord}>
+                  Submit
+              </button>
+              <button
+                className="btn btn-secondary m-1"
+                onClick={() => setIsAddingRecord(false)}>
+                Cancel
+              </button>
+            </td>
+          </tr>
+        ) : (
+          <tr>
+            <td colSpan={4}>
+              <button
+                className="btn btn-primary m-3 auto-align-end"
+                onClick={handleNewRecord}>
+                  Add Record
+              </button>
+            </td>
+          </tr>
+        )}
+      </tbody>
     </Table>
   )
 
