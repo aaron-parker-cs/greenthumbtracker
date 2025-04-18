@@ -3,26 +3,27 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import { api } from '../../redux/api';
 import { toast } from 'react-toastify';
+import { UnknownAction } from 'redux';
 
-interface GenericRecordTableProps {
+interface GenericRecordTableProps<T> {
   // redux state methods
   fetchRecordStart: Function;
   fetchRecordSuccess: Function;
   fetchRecordFailure: Function;
-  stateAddRecord: (record: any) => void;
-  stateRemoveRecord: (id: number) => void;
-  stateUpdateRecord: (record: any) => void;
+  stateAddRecord: (record: T) => UnknownAction;
+  stateRemoveRecord: (id: number) => UnknownAction;
+  stateUpdateRecord: (record: T) => UnknownAction;
   
   // API methods
   ApiGetRecords: (plantId: number, options?: { skip: boolean }) => {
-    data: any[] | undefined;
+    data: T[] | undefined;
     isLoading: boolean;
     isError: boolean;
     error: string | null;
     refetch: () => void;
   };
   ApiAddRecord: () => [
-    createRecord: (plantId: number, record: any) => Promise<any>,
+    createRecord: (plantId: number, record: T) => Promise<any>,
     {
       isSuccess: boolean;
       isError: boolean;
@@ -31,7 +32,7 @@ interface GenericRecordTableProps {
     }
   ];
   ApiUpdateRecord: () => [
-    updateRecord: (plantId: number, record: any) => Promise<any>,
+    updateRecord: ({ plantId, record }: { plantId: number; record: T }) => Promise<any>,
     {
       isSuccess: boolean;
       isError: boolean;
@@ -40,7 +41,7 @@ interface GenericRecordTableProps {
     }
   ];
   ApiDeleteRecord: () => [
-    deleteRecord: (plantId: number, recordId: number) => Promise<any>,
+    deleteRecord: ({plantId, recordId}: {plantId: number, recordId: number}) => Promise<any>,
     {
       isSuccess: boolean;
       isError: boolean;
@@ -49,11 +50,13 @@ interface GenericRecordTableProps {
     }
   ];
 
-  // Table columns
+  // Variables
   recordedValueName: string; // height, amount, temperature, etc.
+  recordType: string; // water, growth, soil_moisture, etc.
+  defaultRecord: T; // Defailt structure for a new record
 }
 
-const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
+const GenericRecordTable = <T extends {id: number; created_: string}>({
   fetchRecordStart,
   fetchRecordSuccess,
   fetchRecordFailure,
@@ -64,8 +67,10 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
   ApiAddRecord,
   ApiUpdateRecord,
   ApiDeleteRecord,
-  recordedValueName,
-}) => {
+  recordedValueName, // height, amount, temperature, etc.
+  recordType, // water, growth, soil_moisture, etc.
+  defaultRecord, // Defailt structure for a new record
+}: GenericRecordTableProps<T>) => {
   // variables
   const selectedPlant = useSelector(
     (state: { plant: { selectedPlant: any } }) => state.plant.selectedPlant
@@ -75,11 +80,14 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
 
   // state variables
   const [newRecord, setNewRecord] = useState({
-    // TODO figure out values to put here for multiple record types
+    value: "",
+    date: "",
+    uom: 1,
+    // TODO allow user to change uom when creating/editing
   });
   const [isAddingRecord, setIsAddingRecord] = useState<boolean>(false);
   const [isEditingRecordId, setIsEditingRecordId] = useState<number | null>(null);
-  const [editedRecord, setEditedRecord] = useState<any | null>(null);
+  const [editedRecord, setEditedRecord] = useState<T | null>(null);
 
   // API add/update/remove hook result objects
   const [
@@ -175,7 +183,39 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
   };
 
   const handleSubmitNewRecord = async () => {
+    /*
+    if record is growth or water then
+      add growth/water record (id, plant, value, uom, date, created, updated)
+    else create secondary record
+      (id, plant, user, value, date)
 
+    other record types were implemented with the user variable and without
+    the created/updated timestamps so this is the easiest current solution
+    */
+    
+    setIsAddingRecord(false);
+    const submitNewRecord: T = {
+      ...defaultRecord,
+      plant: selectedPlant.id,
+      date: newRecord.date,
+      [recordedValueName]: newRecord.value,
+    }
+    if("uom" in submitNewRecord){
+      submitNewRecord["uom"] = newRecord.uom;
+    }
+
+    try{
+      await createRecord(selectedPlant.id, submitNewRecord);
+      dispatch(stateAddRecord(submitNewRecord));
+      setNewRecord({
+        value: "",
+        date: "",
+        uom: 1,
+      });
+      refetch();
+    } catch(error){
+      console.error("Error created new record: ", error);
+    }
   };
 
   const handleEditClick = (record: any) => {
@@ -184,15 +224,33 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
   };
 
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
+    const {name, value} = e.target;
+    if(editedRecord){
+      setEditedRecord({
+        ...editedRecord,
+        [name]: name === "value" ? Number(value) : value,
+      });
+    }
   };
 
   const handleSubmitEditRecord = async () => {
-
+    if(editedRecord){
+      try{
+        await updateRecord({plantId: selectedPlant.id, record: editedRecord});
+        dispatch(stateUpdateRecord(editedRecord));
+        setEditedRecord(null);
+        setIsEditingRecordId(null);
+        refetch();
+      } catch(error){
+        console.error("Error updating record: ", error);
+      }
+    }
   };
 
   const onDelete = async (id: number) => {
-
+    await deleteRecord({plantId: selectedPlant.id, recordId: id});
+    dispatch(stateRemoveRecord(id));
+    refetch();
   };
 
   // JSX
@@ -227,7 +285,7 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
                   <input
                     type="number"
                     name="value"
-                    value={editedRecord?.height ?? ""} 
+                    value={editedRecord ? (editedRecord[recordedValueName as keyof T] as string | number | undefined) : ""}
                     onChange={handleEditInputChange}
                     placeholder="Height in cm"
                   />
@@ -251,7 +309,7 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
                 <td>{new Date(record.created_).toLocaleDateString()}</td>
                 {/* TODO get record value here, not always height 
                     same with placeholder value*/} 
-                <td>{record.height} cm</td>
+                <td>{record[recordedValueName as keyof T] as string | number | undefined} cm</td>
                 <td>
                   <button
                     className="btn btn-warning m-1"
@@ -283,7 +341,7 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
               <input
                 type="date"
                 name="created_"
-                value={newRecord.created_}
+                value={newRecord.date}
                 onChange={handleInputChange}
                 className="form-control"
               />
@@ -293,8 +351,8 @@ const GenericRecordTable: React.FC<GenericRecordTableProps> = ({
                   same with placeholder value*/} 
               <input
                 type="number"
-                name="height"
-                value={newRecord.height}
+                name="value"
+                value={newRecord.value}
                 onChange={handleInputChange}
                 className="form-control"
                 placeholder="Height in cm"
