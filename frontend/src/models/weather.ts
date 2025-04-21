@@ -53,3 +53,7 @@ export interface OpenWeatherApiResponse {
     sunset: number;
   };
 }
+
+export interface LocationData {
+  city: string;
+}

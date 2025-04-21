@@ -9,7 +9,7 @@ export async function setUserLocation(
   userId: number
 ): Promise<void> {
   const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-    inputValue
+    `${inputValue},US`
   )}&limit=1&appid=${openWeatherApiKey}`;
   const response = await fetch(geocodeUrl, {
     method: "GET",
@@ -29,7 +29,7 @@ export async function setUserLocation(
   }
 
   const { lat, lon } = data[0];
-  userRepository.updateUserLocation(userId, lat, lon);
+  userRepository.updateUserLocation(userId, inputValue, lat, lon);
 }
 
 export async function getWeatherData(
