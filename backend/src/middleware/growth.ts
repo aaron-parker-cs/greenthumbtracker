@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { plantRepository } from "../db/repositories/plant.repository";
 import { growthRepository } from "../db/repositories/growth.repository";
+import { uomRepository } from "../db/repositories/unit.repository";
 
 export const validateGrowth = async (
   req: Request,
@@ -10,10 +11,7 @@ export const validateGrowth = async (
   // Check if all fields are provided
   const { height, date, uomId } = req.body;
   const plantId = req.params.plantId;
-  if (process.env.NODE_ENV !== "production") {
-    const sanitizedBody = { ...req.body, sensitiveField: "REDACTED" }; // Replace 'sensitiveField' with actual sensitive keys
-    console.log("Request body:", sanitizedBody);
-  }
+
   if (!plantId || !height) {
     res.status(400).json({
       message:
@@ -37,7 +35,7 @@ export const validateGrowth = async (
   // Check if uom exists in the database
   if (uomId) {
     try {
-      const uom = await uomId.findUomById(Number(uomId));
+      const uom = await uomRepository.findUomById(Number(uomId)); //fixed from uomID to uomRepository
       if (!uom) {
         res
           .status(400)
