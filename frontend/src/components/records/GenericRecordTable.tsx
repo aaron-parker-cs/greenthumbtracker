@@ -1,62 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
-import { api } from '../../redux/api';
 import { toast } from 'react-toastify';
 import { UnknownAction } from 'redux';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 interface GenericRecordTableProps<T> {
   // redux state methods
   fetchRecordStart: Function;
   fetchRecordSuccess: Function;
   fetchRecordFailure: Function;
+  // stateAddRecord: (action: PayloadAction<T>) => UnknownAction;
   stateAddRecord: (record: T) => UnknownAction;
-  stateRemoveRecord: (id: number) => UnknownAction;
+  stateRemoveRecord: (id: string) => UnknownAction;
   stateUpdateRecord: (record: T) => UnknownAction;
   
   // API methods
-  ApiGetRecords: (plantId: number, options?: { skip: boolean }) => {
-    data: T[] | undefined;
-    isLoading: boolean;
-    isError: boolean;
-    error: string | null;
-    refetch: () => void;
-  };
-  ApiAddRecord: () => [
-    createRecord: (plantId: number, record: T) => Promise<any>,
-    {
-      isSuccess: boolean;
-      isError: boolean;
-      error: string | null;
-      reset: () => void;
-    }
-  ];
-  ApiUpdateRecord: () => [
-    updateRecord: ({ plantId, record }: { plantId: number; record: T }) => Promise<any>,
-    {
-      isSuccess: boolean;
-      isError: boolean;
-      error: string | null;
-      reset: () => void;
-    }
-  ];
-  ApiDeleteRecord: () => [
-    deleteRecord: ({plantId, recordId}: {plantId: number, recordId: number}) => Promise<any>,
-    {
-      isSuccess: boolean;
-      isError: boolean;
-      error: string | null;
-      reset: () => void;
-    }
-  ];
+  // ApiGetRecords: (plantId: number, options?: { skip: boolean }) => {
+  //   data: T[] | undefined;
+  //   isLoading: boolean;
+  //   isError: boolean;
+  //   error: string | null;
+  //   refetch: () => void;
+  // };
+  ApiGetRecords: Function;
+  ApiAddRecord: Function;
+  ApiUpdateRecord: Function;
+  ApiDeleteRecord: Function;
 
   // Variables
   recordedValueName: string; // height, amount, temperature, etc.
-  recordType: string; // water, growth, soil_moisture, etc.
+  recordType: string; // waterRecord, growthRecord, soil_moistureRecord, etc.
   defaultRecord: T; // Defailt structure for a new record
 }
 
-const GenericRecordTable = <T extends {id: number; created_: string}>({
+const GenericRecordTable = <T extends {id: number; created_: Date}>({
   fetchRecordStart,
   fetchRecordSuccess,
   fetchRecordFailure,
@@ -81,7 +59,7 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
   // state variables
   const [newRecord, setNewRecord] = useState({
     value: "",
-    date: "",
+    created_: "",
     uom: 1,
     // TODO allow user to change uom when creating/editing
   });
@@ -197,7 +175,7 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
     const submitNewRecord: T = {
       ...defaultRecord,
       plant: selectedPlant.id,
-      date: newRecord.date,
+      date: newRecord.created_,
       [recordedValueName]: newRecord.value,
     }
     if("uom" in submitNewRecord){
@@ -205,11 +183,11 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
     }
 
     try{
-      await createRecord(selectedPlant.id, submitNewRecord);
+      await createRecord({plantId: selectedPlant.id, growthRecord: submitNewRecord});
       dispatch(stateAddRecord(submitNewRecord));
       setNewRecord({
         value: "",
-        date: "",
+        created_: "",
         uom: 1,
       });
       refetch();
@@ -225,18 +203,23 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
 
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
+    // console.log(name);
+    // console.log(value);
+    // console.log(selectedPlant);
     if(editedRecord){
       setEditedRecord({
         ...editedRecord,
-        [name]: name === "value" ? Number(value) : value,
+        [name]: name === recordedValueName ? Number(value) : value,
       });
     }
   };
 
   const handleSubmitEditRecord = async () => {
     if(editedRecord){
+      // console.log(editedRecord);
+      // console.log(editedRecord.id);
       try{
-        await updateRecord({plantId: selectedPlant.id, record: editedRecord});
+        await updateRecord({plantId: selectedPlant.id, [recordType]: editedRecord});
         dispatch(stateUpdateRecord(editedRecord));
         setEditedRecord(null);
         setIsEditingRecordId(null);
@@ -249,7 +232,7 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
 
   const onDelete = async (id: number) => {
     await deleteRecord({plantId: selectedPlant.id, recordId: id});
-    dispatch(stateRemoveRecord(id));
+    dispatch(stateRemoveRecord(id.toString()));
     refetch();
   };
 
@@ -265,7 +248,7 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
         </tr>
       </thead>
       <tbody>
-        {records?.map((record, index) => (
+        {records?.map((record: T, index: number) => (
           <tr key={record.id}>
             {isEditingRecordId === record.id ? (
               <>
@@ -284,7 +267,7 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
                       same with placeholder value*/} 
                   <input
                     type="number"
-                    name="value"
+                    name={recordedValueName}
                     value={editedRecord ? (editedRecord[recordedValueName as keyof T] as string | number | undefined) : ""}
                     onChange={handleEditInputChange}
                     placeholder="Height in cm"
@@ -341,7 +324,7 @@ const GenericRecordTable = <T extends {id: number; created_: string}>({
               <input
                 type="date"
                 name="created_"
-                value={newRecord.date}
+                value={newRecord.created_}
                 onChange={handleInputChange}
                 className="form-control"
               />
