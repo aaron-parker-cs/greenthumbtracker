@@ -231,7 +231,7 @@ const GenericRecordTable = <T extends {id: number; created_: Date}>({
   };
 
   const onDelete = async (id: number) => {
-    await deleteRecord({plantId: selectedPlant.id, recordId: id});
+    await deleteRecord({plantId: selectedPlant.id, [recordType + "Id"]: id});
     dispatch(stateRemoveRecord(id.toString()));
     refetch();
   };
