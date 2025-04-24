@@ -2,9 +2,9 @@ import { useSelector } from "react-redux";
 import { Accordion } from "react-bootstrap";
 import { Plant } from "../models/plant";
 import { GrowthRecord } from "../models/growth";
-// import { WaterRecord } from "../models/water";
+import { WaterRecord } from "../models/water";
 import "../styles/recordsPage.scss";
-import GrowthRecordTable from "../components/records/GrowthRecordTable";
+// import GrowthRecordTable from "../components/records/GrowthRecordTable";
 // import WaterRecordTable from "../components/records/WaterRecordTable";
 import GenericRecordTable from "../components/records/GenericRecordTable";
 import { api } from "../redux/api";
@@ -16,14 +16,14 @@ import {
   removeGrowthRecord,
   updateGrowthRecord,
 } from '../redux/records/growthRecord';
-// import {
-//   fetchWaterRecordsStart,
-//   fetchWaterRecordsSuccess,
-//   fetchWaterRecordsFailure,
-//   addWaterRecord,
-//   removeWaterRecord,
-//   updateWaterRecord,
-// } from '../redux/records/waterRecord';
+import {
+  fetchWaterRecordsStart,
+  fetchWaterRecordsSuccess,
+  fetchWaterRecordsFailure,
+  addWaterRecord,
+  removeWaterRecord,
+  updateWaterRecord,
+} from '../redux/records/waterRecord';
 
 const RecordsPage = () => {
   const selectedPlant = useSelector(
@@ -100,7 +100,29 @@ const RecordsPage = () => {
           <Accordion.Item eventKey="1">
             <Accordion.Header>Water Records</Accordion.Header>
             <Accordion.Body>
-              <GrowthRecordTable/>
+              <GenericRecordTable<WaterRecord> 
+                fetchRecordStart={fetchWaterRecordsStart}
+                fetchRecordSuccess={fetchWaterRecordsSuccess}
+                fetchRecordFailure={fetchWaterRecordsFailure}
+                stateAddRecord={addWaterRecord}
+                stateRemoveRecord={removeWaterRecord}
+                stateUpdateRecord={updateWaterRecord}
+                ApiGetRecords={api.useGetWaterRecordsQuery}
+                ApiAddRecord={api.useAddWaterRecordMutation}
+                ApiUpdateRecord={api.useUpdateWaterRecordMutation}
+                ApiDeleteRecord={api.useDeleteWaterRecordMutation}
+                recordedValueName="amount"
+                recordType="waterRecord"
+                defaultRecord={{
+                  plant: selectedPlant?.id || 0,
+                  amount: 0,
+                  uom: 7,
+                  date: new Date(),
+                  created_: new Date(),
+                  updated_: new Date(),
+                  id: 0,
+                }}
+              />
             </Accordion.Body>
           </Accordion.Item>
           

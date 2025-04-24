@@ -46,7 +46,7 @@ const GenericRecordTable = <T extends {id: number; created_: Date}>({
   ApiUpdateRecord,
   ApiDeleteRecord,
   recordedValueName, // height, amount, temperature, etc.
-  recordType, // water, growth, soil_moisture, etc.
+  recordType, // waterRecord, growthRecord, soil_moistureRecord, etc.
   defaultRecord, // Defailt structure for a new record
 }: GenericRecordTableProps<T>) => {
   // variables
@@ -175,7 +175,7 @@ const GenericRecordTable = <T extends {id: number; created_: Date}>({
     const submitNewRecord: T = {
       ...defaultRecord,
       plant: selectedPlant.id,
-      date: newRecord.created_,
+      created_: newRecord.created_,
       [recordedValueName]: newRecord.value,
     }
     if("uom" in submitNewRecord){
@@ -183,7 +183,7 @@ const GenericRecordTable = <T extends {id: number; created_: Date}>({
     }
 
     try{
-      await createRecord({plantId: selectedPlant.id, growthRecord: submitNewRecord});
+      await createRecord({plantId: selectedPlant.id, [recordType]: submitNewRecord});
       dispatch(stateAddRecord(submitNewRecord));
       setNewRecord({
         value: "",
