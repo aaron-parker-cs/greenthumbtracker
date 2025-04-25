@@ -175,7 +175,7 @@ const GenericRecordTable = <T extends {id: number; created_: Date}>({
     const submitNewRecord: T = {
       ...defaultRecord,
       plant: selectedPlant.id,
-      created_: newRecord.created_,
+      date: newRecord.created_,
       [recordedValueName]: newRecord.value,
     }
     if("uom" in submitNewRecord){

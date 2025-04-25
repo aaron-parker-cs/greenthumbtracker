@@ -28,10 +28,21 @@ import {
   removeWaterRecord,
   updateWaterRecord,
 } from '../redux/records/waterRecord';
+import {
+  fetchTemperatureRecordsStart,
+  fetchTemperatureRecordsSuccess,
+  fetchTemperatureRecordsFailure,
+  addTemperatureRecord,
+  removeTemperatureRecord,
+  updateTemperatureRecord,
+} from '../redux/records/temperatureRecord';
 
 const RecordsPage = () => {
   const selectedPlant = useSelector(
     (state: { plant: { selectedPlant: Plant } }) => state.plant.selectedPlant
+  );
+  const selectedUser = useSelector(
+    (state: { auth: { user: { id: number } } }) => state.auth.user.id
   );
 
   // add other records once implemented
@@ -59,18 +70,18 @@ const RecordsPage = () => {
 
   /*
   <GenericRecordTable<GrowthRecord> 
-  fetchRecordStart={} 
-  fetchRecordSuccess={} 
-  fetchRecordFailure={} 
-  stateAddRecord={} 
-  stateRemoveRecord={} 
-  stateUpdateRecord={} 
+  fetchRecordStart={}
+  fetchRecordSuccess={}
+  fetchRecordFailure={}
+  stateAddRecord={}
+  stateRemoveRecord={}
+  stateUpdateRecord={}
   ApiGetRecords={}
-  ApiAddRecord={} 
+  ApiAddRecord={}
   ApiUpdateRecord={}
   ApiDeleteRecord={}
-  recordedValueName="" 
-  recordType="" 
+  recordedValueName=""
+  recordType=""
   defaultRecord={{
     
   }}
@@ -154,7 +165,27 @@ const RecordsPage = () => {
           <Accordion.Item eventKey="2">
             <Accordion.Header>Temperature Records</Accordion.Header>
             <Accordion.Body>
-
+              <GenericRecordTable<TemperatureRecord> 
+                fetchRecordStart={fetchTemperatureRecordsStart} 
+                fetchRecordSuccess={fetchTemperatureRecordsSuccess} 
+                fetchRecordFailure={fetchTemperatureRecordsFailure} 
+                stateAddRecord={addTemperatureRecord} 
+                stateRemoveRecord={removeTemperatureRecord} 
+                stateUpdateRecord={updateTemperatureRecord} 
+                ApiGetRecords={api.useGetTemperatureRecordsQuery}
+                ApiAddRecord={api.useAddTemperatureRecordMutation} 
+                ApiUpdateRecord={api.useUpdateTemperatureRecordMutation}
+                ApiDeleteRecord={api.useDeleteTemperatureRecordMutation}
+                recordedValueName="temperature" 
+                recordType="tempuratureRecord" 
+                defaultRecord={{
+                  plant: selectedPlant?.id || 0,
+                  user: selectedUser || 0,
+                  temperature: 0,
+                  date: new Date(),
+                  id: 0,
+                }}
+              />
             </Accordion.Body>
           </Accordion.Item>
 

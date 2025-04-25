@@ -6,6 +6,7 @@ import { GrowthRecord } from "../models/growth";
 import { WaterRecord } from "../models/water";
 import { ApiStatus } from "../models/status";
 import { LocationData, OpenWeatherApiResponse } from "../models/weather";
+import { TemperatureRecord } from "../models/temperature";
 
 const baseUrl = `/api`;
 
@@ -170,6 +171,39 @@ export const api = createApi({
     >({
       query: ({ plantId, waterRecordId }) => ({
         url: `/water/${plantId}/${waterRecordId}`,
+        method: "DELETE",
+      }),
+    }),
+    // break
+    getTemperatureRecords: builder.query<TemperatureRecord[], number>({
+      query: (plantId) => `/temperature/${plantId}`,
+    }),
+    addTemperatureRecord: builder.mutation<
+      void,
+      { plantId: number; temperatureRecord: TemperatureRecord }
+    >({
+      query: ({ plantId, temperatureRecord }) => ({
+        url: `/yemperature/${plantId}`,
+        method: "POST",
+        body: temperatureRecord,
+      }),
+    }),
+    updateTemperatureRecord: builder.mutation<
+      void,
+      { plantId: number; temperatureRecord: TemperatureRecord }
+    >({
+      query: ({ plantId, temperatureRecord }) => ({
+        url: `/temperature/${plantId}/${temperatureRecord.id}`,
+        method: "PUT",
+        body: temperatureRecord,
+      }),
+    }),
+    deleteTemperatureRecord: builder.mutation<
+      void,
+      { plantId: number; temperatureRecordId: number }
+    >({
+      query: ({ plantId, temperatureRecordId }) => ({
+        url: `/temperature/${plantId}/${temperatureRecordId}`,
         method: "DELETE",
       }),
     }),

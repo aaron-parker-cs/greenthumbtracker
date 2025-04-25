@@ -10,6 +10,10 @@ import authRoutes from "./routes/auth";
 import plantRoutes from "./routes/plants";
 import waterRoutes from "./routes/water";
 import growthRoutes from "./routes/growth";
+import temperatureRoutes from './routes/temperature';
+import lightRoutes from './routes/light';
+import humidityRoutes from './routes/humidity';
+import soilMoistureRoutes from './routes/soil_moisture';
 import uomRoutes from "./routes/uom";
 import weatherRoutes from "./routes/weather";
 import cookieParser from "cookie-parser";
@@ -49,6 +53,10 @@ app.use("/api/water", waterRoutes);
 app.use("/api/growth", growthRoutes);
 app.use("/api/uom", uomRoutes);
 app.use("/api/weather", weatherRoutes);
+app.use("/api/temperature", temperatureRoutes);
+app.use("/api/light", lightRoutes);
+app.use("/api/humidity", humidityRoutes);
+app.use("/api/soilMoisture", soilMoistureRoutes);
 
 // Swagger -- API Documentation and routes testing
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));
