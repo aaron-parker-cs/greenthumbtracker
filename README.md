@@ -57,3 +57,6 @@ For simplicity, only one contributer will need to approve a pull request,
 # How do I test my backend routes?
 
 This is a very simple problem that will be solved in the first pull request. Swagger is a utility that we can use to call our own API endpoints without having to use an external tool such as Postman. For this, you simply need to run `npm start` in the backend folder, and then navigate to `http://localhost:8800/swagger`, or whatever port you're using. For now, we have to post to /login, which will create a token, then you can use the other endpoints. 
+
+# iOS App 
+We now have a mobile app for iOS! Repo is found [here](https://github.com/tobyish111/GreenThumbTracker.git)
