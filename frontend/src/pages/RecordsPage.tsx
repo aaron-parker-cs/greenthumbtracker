@@ -3,6 +3,10 @@ import { Accordion } from "react-bootstrap";
 import { Plant } from "../models/plant";
 import { GrowthRecord } from "../models/growth";
 import { WaterRecord } from "../models/water";
+import { TemperatureRecord } from "../models/temperature";
+import { LightRecord } from "../models/light";
+import { HumidityRecord } from "../models/humidity";
+import { SoilMoistureRecord } from "../models/soil_moisture";
 import "../styles/recordsPage.scss";
 // import GrowthRecordTable from "../components/records/GrowthRecordTable";
 // import WaterRecordTable from "../components/records/WaterRecordTable";
@@ -51,6 +55,26 @@ const RecordsPage = () => {
     recordedValueName  (height, amount, temperature, etc.)
     recordType         (water, growth, soil_moisture, etc.)
     defaultRecord      (default structure for this record type)
+  */
+
+  /*
+  <GenericRecordTable<GrowthRecord> 
+  fetchRecordStart={} 
+  fetchRecordSuccess={} 
+  fetchRecordFailure={} 
+  stateAddRecord={} 
+  stateRemoveRecord={} 
+  stateUpdateRecord={} 
+  ApiGetRecords={}
+  ApiAddRecord={} 
+  ApiUpdateRecord={}
+  ApiDeleteRecord={}
+  recordedValueName="" 
+  recordType="" 
+  defaultRecord={{
+    
+  }}
+  />
   */
 
   return (
@@ -123,6 +147,38 @@ const RecordsPage = () => {
                   id: 0,
                 }}
               />
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Temperature Records */}
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Temperature Records</Accordion.Header>
+            <Accordion.Body>
+
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Light Records */}
+          <Accordion.Item eventKey="3">
+            <Accordion.Header>Light Records</Accordion.Header>
+            <Accordion.Body>
+              
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Humidity Records */}
+          <Accordion.Item eventKey="4">
+            <Accordion.Header>Humidity Records</Accordion.Header>
+            <Accordion.Body>
+              
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Soil Moisutre Records */}
+          <Accordion.Item eventKey="5">
+            <Accordion.Header>Soil Moisture Records</Accordion.Header>
+            <Accordion.Body>
+              
             </Accordion.Body>
           </Accordion.Item>
           
