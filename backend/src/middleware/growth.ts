@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { plantRepository } from "../db/repositories/plant.repository";
 import { growthRepository } from "../db/repositories/growth.repository";
+import { uomRepository } from "../db/repositories/unit.repository";
 
 export const validateGrowth = async (
   req: Request,
@@ -37,7 +38,7 @@ export const validateGrowth = async (
   // Check if uom exists in the database
   if (uomId) {
     try {
-      const uom = await uomId.findUomById(Number(uomId));
+      const uom = await uomRepository.findUomById(Number(uomId));
       if (!uom) {
         res
           .status(400)
