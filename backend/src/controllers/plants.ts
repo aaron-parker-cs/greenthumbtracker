@@ -78,7 +78,6 @@ export const updatePlant = async (
 
     const plantId = parseInt(id, 10);
     await plantRepository.updatePlant(plantId, user_id, name, species);
-1
     res.status(200).json({ message: "Plant updated successfully!" });
     return;
   } catch (err) {
