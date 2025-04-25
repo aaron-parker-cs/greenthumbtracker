@@ -6,6 +6,8 @@ import { api } from "../redux/api";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Credential } from "../models/credential";
 
+export const PASSWORD_RULE = /^(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
+
 const Register = () => {
   const [inputs, setInputs] = useState({
     username: "",
@@ -32,19 +34,18 @@ const Register = () => {
     }
   }, [isError, registerError]);
 
+  const passwordMeetsRules = (pwd: string) => PASSWORD_RULE.test(pwd);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (inputs.password !== inputs.confirmPassword) {
-      setError("Passwords do not match");
-      return;
+      return setError("Passwords do not match");
     }
-    const passwordRegex =
-      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
-    if (!passwordRegex.test(inputs.password)) {
-      setError(
-        "Password must be at least 8 characters long and include a number and a special character"
+    if (!passwordMeetsRules(inputs.password)) {
+      return setError(
+        "Password must be at least 8 characters long, include a number and a special character"
       );
-      return;
     }
     const credentials: Credential = {
       username: inputs.username,
@@ -65,21 +66,20 @@ const Register = () => {
     setInputs((prev) => ({ ...prev, [id]: value }));
 
     if (id === "password" || id === "confirmPassword") {
-      if (inputs.password !== inputs.confirmPassword) {
-        setError("Passwords do not match");
-      } else {
-        setError("");
-      }
-
-      const passwordRegex =
-        /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
-      if (!passwordRegex.test(inputs.password)) {
-        setError(
-          "Password must be at least 8 characters long and include a number and a special character"
+      if (id === "password" && !passwordMeetsRules(value)) {
+        return setError(
+          "Password must be at least 8 characters long, include a number and a special character"
         );
-      } else {
-        setError("");
       }
+      if (
+        (id === "confirmPassword" && value !== inputs.password) ||
+        (id === "password" &&
+          inputs.confirmPassword &&
+          value !== inputs.confirmPassword)
+      ) {
+        return setError("Passwords do not match");
+      }
+      setError("");
     }
   };
 
