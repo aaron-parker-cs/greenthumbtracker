@@ -35,7 +35,8 @@ export const validateGrowth = async (
   // Check if uom exists in the database
   if (uomId) {
     try {
-      const uom = await uomRepository.findUomById(Number(uomId)); //fixed from uomID to uomRepository
+      const uom = await uomRepository.findUomById(Number(uomId));
+
       if (!uom) {
         res
           .status(400)
