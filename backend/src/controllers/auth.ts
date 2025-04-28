@@ -67,6 +67,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       .json({message:"User has been created. Please check your email to verify."});
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
+    console.error("Registration Error", err);
   }
 };
 
@@ -116,18 +117,19 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { password: _, ...userData } = user;
 
     // Set the cookie and respond WITH JSON
+    // Set the cookie and respond WITH JSON
     res
       .cookie("access_token", token, {
         httpOnly: true,
         // sameSite, secure, etc., as needed
       })
       .status(200)
-      //include user id to be returned for iOS client, react frontend still works
+      //include user id in the return 
       .json({
-        id: user.id,
-        username: user.username,
-        email: user.email,   
-      token
+       id: user.id,
+       username: user.username,
+       email: user.email,
+       token
     });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });

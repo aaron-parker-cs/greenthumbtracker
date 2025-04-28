@@ -49,6 +49,7 @@ export const createGrowthRecord = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Growth Record created successfully" });
     return;
   } catch (err) {
+    console.error("Failed to create growth record", err); //for debugging
     res.status(500).json({ error: (err as Error).message });
     return;
   }

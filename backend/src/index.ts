@@ -10,6 +10,10 @@ import authRoutes from "./routes/auth";
 import plantRoutes from "./routes/plants";
 import waterRoutes from "./routes/water";
 import growthRoutes from "./routes/growth";
+import humidityRoutes from "./routes/humidity";
+import lightRoutes from "./routes/light";
+import soilRoutes from "./routes/soil_moisture";
+import tempRoutes from "./routes/temperature";
 import uomRoutes from "./routes/uom";
 import weatherRoutes from "./routes/weather";
 import cookieParser from "cookie-parser";
@@ -47,6 +51,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/plants", plantRoutes);
 app.use("/api/water", waterRoutes);
 app.use("/api/growth", growthRoutes);
+app.use("/api/humidity", humidityRoutes);
+app.use("/api/light", lightRoutes);
+app.use("/api/soil-moisture", soilRoutes);
+app.use("/api/temperature", tempRoutes);
 app.use("/api/uom", uomRoutes);
 app.use("/api/weather", weatherRoutes);
 
@@ -79,4 +87,9 @@ cron.schedule("0 12 * * *", () => {
 const PORT = Number(process.env.PORT) || 8800;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
+});
+
+//for any invalid routes, catch all handler
+app.use((req, res) => {
+  res.status(404).json({message: `Route not found: ${req.originalUrl}`});
 });
