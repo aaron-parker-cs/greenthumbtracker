@@ -1,6 +1,6 @@
 import { AppDataSource } from "../db";
 import { User } from "../entities/user";
-import { Repository } from "typeorm";
+import { Repository, Not, IsNull } from "typeorm";
 import { UserRole } from "../entities/user_role";
 
 export class UserRepository {
@@ -74,7 +74,56 @@ export class UserRepository {
     newUser.username = username;
     newUser.email = email;
     newUser.password = password; // hashed already in controller
+    newUser.isVerified = false;
+    newUser.role = await this.roleRepo.findOneByOrFail({ name: "user" });
     return this.repo.save(newUser);
+  }
+
+  /**
+   * Get all users with a geo location
+   */
+  async getAllUsersWithLocation(): Promise<User[]> {
+    return this.repo.find({
+      where: { latitude: Not(IsNull()), longitude: Not(IsNull()) },
+    });
+  }
+
+  /**
+   * Update a user's geo location
+   */
+  async updateUserLocation(
+    userId: number,
+    city: string,
+    latitude: number,
+    longitude: number
+  ): Promise<User> {
+    const user = await this.repo.findOneBy({ id: userId });
+    if (!user) throw new Error("User not found");
+    user.city = city;
+    user.latitude = latitude;
+    user.longitude = longitude;
+    return this.repo.save(user);
+  }
+
+  /**
+   * Get a user's city by their id
+   */
+  async getUserCityById(userId: number): Promise<string | null> {
+    const user = await this.repo.findOneBy({ id: userId });
+    if (!user) throw new Error("User not found");
+    return user.city ?? null;
+  }
+  /**
+   * Set a user's last lowest temperature
+   */
+  async setLastLowestTemperature(
+    userId: number,
+    lastLowestTemperature: number
+  ): Promise<User> {
+    const user = await this.repo.findOneBy({ id: userId });
+    if (!user) throw new Error("User not found");
+    user.lastLowestTemperature = lastLowestTemperature;
+    return this.repo.save(user);
   }
 }
 
