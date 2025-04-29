@@ -7,10 +7,10 @@ export const validateSoilMoisture = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { soilMoisture, date, uomId } = req.body;
+  const { soil_moisture, date, uomId } = req.body;
   const plantId = Number(req.params.plantId);
 
-  if (!plantId || soilMoisture === undefined) {
+  if (!plantId || soil_moisture === undefined) {
     res.status(400).json({
       message:
         "There was an error processing your request, please ensure you fill out all fields.",
@@ -18,7 +18,7 @@ export const validateSoilMoisture = async (
     return;
   }
 
-  if (isNaN(soilMoisture)) {
+  if (isNaN(soil_moisture)) {
     res.status(400).json({ message: "Soil moisture must be a number." });
     return;
   }
