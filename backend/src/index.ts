@@ -20,6 +20,7 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import { specs } from "./config/swagger";
 import cors from "cors";
+import trefleRoutes from "./routes/trefle.route";
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use("/api/soil-moisture", soilRoutes);
 app.use("/api/temperature", tempRoutes);
 app.use("/api/uom", uomRoutes);
 app.use("/api/weather", weatherRoutes);
+app.use("/api", trefleRoutes);
 
 // Swagger -- API Documentation and routes testing
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));
