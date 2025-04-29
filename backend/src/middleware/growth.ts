@@ -36,7 +36,6 @@ export const validateGrowth = async (
   if (uomId) {
     try {
       const uom = await uomRepository.findUomById(Number(uomId));
-
       if (!uom) {
         res
           .status(400)
