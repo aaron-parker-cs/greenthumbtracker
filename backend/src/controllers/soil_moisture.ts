@@ -13,7 +13,7 @@ export const getSoilMoistureRecords = async (req: Request, res: Response) => {
 };
 
 export const createSoilMoistureRecord = async (req: Request, res: Response) => {
-  const { soilMoisture, date, uomId } = req.body;
+  const { soil_moisture, date, uomId } = req.body;
   const plantId = Number(req.params.plantId);
   const userId = (req as any).userId;
 
@@ -29,7 +29,7 @@ export const createSoilMoistureRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    await soilMoistureRepository.createSoilMoistureRecord(plantId, userId, new Date(date), soilMoisture);
+    await soilMoistureRepository.createSoilMoistureRecord(plantId, userId, new Date(date), soil_moisture);
     res.status(201).json({ message: "Soil moisture record created successfully." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -39,7 +39,7 @@ export const createSoilMoistureRecord = async (req: Request, res: Response) => {
 export const updateSoilMoistureRecord = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const plantId = Number(req.params.plantId);
-  const { date, soilMoisture, uomId } = req.body;
+  const { date, soil_moisture, uomId } = req.body;
   const userId = (req as any).userId;
 
   if (!userId) {
@@ -54,7 +54,7 @@ export const updateSoilMoistureRecord = async (req: Request, res: Response) => {
       return;
     }
 
-    await soilMoistureRepository.updateSoilMoistureRecord(id, plantId, userId, new Date(date), soilMoisture);
+    await soilMoistureRepository.updateSoilMoistureRecord(id, plantId, userId, new Date(date), soil_moisture);
     res.status(200).json({ message: "Soil moisture record updated successfully." });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
