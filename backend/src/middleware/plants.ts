@@ -60,8 +60,7 @@ export const validatePlant = async (
       }
       if (plant.user.id !== user_id) {
         res.status(403).json({
-          message: "You do not have permission to update this plant.",
-        });
+          message: "You do not have permission to update this plant."});
         return;
       }
     }

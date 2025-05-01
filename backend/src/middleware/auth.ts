@@ -31,6 +31,14 @@ export const verifyToken = (
     }
     //if token isn't found in either cookies or header return appropriate error message
     if (!token) {
+      //res.status(401).json({ message: "Unauthorized" });
+      const authHeader = req.headers["authorization"];
+      if(authHeader && authHeader.startsWith("Bearer ")){
+        token = authHeader.split(" ")[1];
+      }
+    }
+    //if token isn't found in either cookies or header return appropriate error message
+    if(!token) {
       console.error("No token found in cookies or authorization header");
       res.status(401).json({ message: "Unauthorized" });
       return;
@@ -46,7 +54,6 @@ export const verifyToken = (
     // 4. Continue to the next middleware or route
     next();
   } catch (err) {
-    console.error("Token verification failed:", err);
     res.status(403).json({ message: "Forbidden - Invalid token" });
     return;
   }

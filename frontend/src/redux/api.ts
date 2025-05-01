@@ -4,6 +4,12 @@ import { Plant } from "../models/plant";
 import { Credential } from "../models/credential";
 import { GrowthRecord } from "../models/growth";
 import { WaterRecord } from "../models/water";
+import { TemperatureRecord } from "../models/temperature";
+import { HumidityRecord } from "../models/humidity";
+import { LightRecord } from "../models/light";
+import { SoilMoistureRecord } from "../models/soilMoisture";
+import { ApiStatus } from "../models/status";
+import { LocationData, OpenWeatherApiResponse } from "../models/weather";
 
 const baseUrl = `/api`;
 
@@ -13,8 +19,11 @@ export const api = createApi({
     baseUrl: baseUrl,
     credentials: "include",
   }),
-  tagTypes: ["Plants"],
+  tagTypes: ["Plants", "Weather"],
   endpoints: (builder) => ({
+    health: builder.query<ApiStatus, void>({
+      query: () => "/health",
+    }),
     login: builder.mutation<UserState, Credential>({
       query: (credentials: Credential) => ({
         url: "/auth/login",
@@ -57,6 +66,22 @@ export const api = createApi({
         method: "POST",
         body: { token, password },
       }),
+    }),
+    getWeather: builder.query<OpenWeatherApiResponse, void>({
+      query: () => "/weather",
+      providesTags: ["Weather"],
+    }),
+    setWeatherLocation: builder.mutation<void, { city: string }>({
+      query: ({ city }) => ({
+        url: "/weather/location/city",
+        method: "POST",
+        body: { city },
+      }),
+      invalidatesTags: ["Weather"],
+    }),
+    getUserLocation: builder.query<LocationData, void>({
+      query: () => "/weather/location/city",
+      providesTags: ["Weather"],
     }),
     getPlants: builder.query<Plant[], void>({
       query: () => "/plants",
@@ -149,6 +174,134 @@ export const api = createApi({
     >({
       query: ({ plantId, waterRecordId }) => ({
         url: `/water/${plantId}/${waterRecordId}`,
+        method: "DELETE",
+      }),
+    }),
+    getTemperatureRecords: builder.query<TemperatureRecord[], number>({
+      query: (plantId) => `/temperature/${plantId}`,
+    }),
+    addTemperatureRecord: builder.mutation<
+      void,
+      { plantId: number; temperatureRecord: TemperatureRecord }
+    >({
+      query: ({ plantId, temperatureRecord }) => ({
+        url: `/temperature/${plantId}`,
+        method: "POST",
+        body: temperatureRecord,
+      }),
+    }),
+    updateTemperatureRecord: builder.mutation<
+      void,
+      { plantId: number; temperatureRecord: TemperatureRecord }
+    >({
+      query: ({ plantId, temperatureRecord }) => ({
+        url: `/temperature/${plantId}/${temperatureRecord.id}`,
+        method: "PUT",
+        body: temperatureRecord,
+      }),
+    }),
+    deleteTemperatureRecord: builder.mutation<
+      void,
+      { plantId: number; temperatureRecordId: number }
+    >({
+      query: ({ plantId, temperatureRecordId }) => ({
+        url: `/temperature/${plantId}/${temperatureRecordId}`,
+        method: "DELETE",
+      }),
+    }),
+    getHumidityRecords: builder.query<HumidityRecord[], number>({
+      query: (plantId) => `/humidity/${plantId}`,
+    }),
+    addHumidityRecord: builder.mutation<
+      void,
+      { plantId: number; humidityRecord: HumidityRecord }
+    >({
+      query: ({ plantId, humidityRecord }) => ({
+        url: `/humidity/${plantId}`,
+        method: "POST",
+        body: humidityRecord,
+      }),
+    }),
+    updateHumidityRecord: builder.mutation<
+      void,
+      { plantId: number; humidityRecord: HumidityRecord }
+    >({
+      query: ({ plantId, humidityRecord }) => ({
+        url: `/humidity/${plantId}/${humidityRecord.id}`,
+        method: "PUT",
+        body: humidityRecord,
+      }),
+    }),
+    deleteHumidityRecord: builder.mutation<
+      void,
+      { plantId: number; humidityRecordId: number }
+    >({
+      query: ({ plantId, humidityRecordId }) => ({
+        url: `/humidity/${plantId}/${humidityRecordId}`,
+        method: "DELETE",
+      }),
+    }),
+    getLightRecords: builder.query<LightRecord[], number>({
+      query: (plantId) => `/light/${plantId}`,
+    }),
+    addLightRecord: builder.mutation<
+      void,
+      { plantId: number; lightRecord: LightRecord }
+    >({
+      query: ({ plantId, lightRecord }) => ({
+        url: `/light/${plantId}`,
+        method: "POST",
+        body: lightRecord,
+      }),
+    }),
+    updateLightRecord: builder.mutation<
+      void,
+      { plantId: number; lightRecord: LightRecord }
+    >({
+      query: ({ plantId, lightRecord }) => ({
+        url: `/light/${plantId}/${lightRecord.id}`,
+        method: "PUT",
+        body: lightRecord,
+      }),
+    }),
+    deleteLightRecord: builder.mutation<
+      void,
+      { plantId: number; lightRecordId: number }
+    >({
+      query: ({ plantId, lightRecordId }) => ({
+        url: `/light/${plantId}/${lightRecordId}`,
+        method: "DELETE",
+      }),
+    }),
+    getSoilMoistureRecords: builder.query<SoilMoistureRecord[], number>({
+      query: (plantId) => `/soil-moisture/${plantId}`,
+    }),
+    addSoilMoistureRecord: builder.mutation<
+      void,
+      { plantId: number; soilMoistureRecord: SoilMoistureRecord }
+    >({
+      query: ({ plantId, soilMoistureRecord }) => ({
+        url: `/soil-moisture/${plantId}`,
+        method: "POST",
+        body: soilMoistureRecord,
+      }),
+    }),
+    updateSoilMoistureRecord: builder.mutation<
+      void,
+      { plantId: number; soilMoistureRecord: SoilMoistureRecord }
+    >({
+      query: ({ plantId, soilMoistureRecord }) => ({
+        url: `/soil-moisture/${plantId}/${soilMoistureRecord.id}`,
+        method: "PUT",
+        body: soilMoistureRecord,
+      }),
+    }),
+    deleteSoilMoistureRecord: builder.mutation<
+      void,
+      { plantId: number; soilMoistureRecordId: number }
+    >({
+      query: ({ plantId, soilMoistureRecordId }) => ({
+        url: `/soil-moisture/${plantId}/${soilMoistureRecordId}`,
         method: "DELETE",
       }),
     }),

@@ -51,4 +51,16 @@ export class User {
 
   @Column({ nullable: true, select: false, default: null })
   resetPasswordExpires?: Date;
+
+  @Column({ nullable: true, default: null })
+  city?: string;
+
+  @Column({ nullable: true, default: null })
+  latitude?: number;
+
+  @Column({ nullable: true, default: null })
+  longitude?: number;
+
+  @Column({ nullable: true, default: null })
+  lastLowestTemperature?: number;
 }

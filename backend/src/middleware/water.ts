@@ -8,10 +8,10 @@ export const validateWater = async (
   next: NextFunction
 ): Promise<void> => {
   // Check if all fields are provided, water date may be null for current timestamp
-  const { waterAmount, waterDate, uomId } = req.body;
+  const { amount, date, uomId } = req.body;
   const plantId = Number(req.params.plantId);
   console.log(req.body);
-  if (!plantId || !waterAmount) {
+  if (!plantId || !amount) {
     res.status(400).json({
       message:
         "There was an error processing your request, please ensure you fill out all fields.",
@@ -20,7 +20,7 @@ export const validateWater = async (
   }
 
   // Check if water amount is a number
-  if (isNaN(waterAmount)) {
+  if (isNaN(amount)) {
     res.status(400).json({ message: "Water amount must be a number." });
     return;
   }
@@ -55,16 +55,16 @@ export const validateWater = async (
   }
 
   // Sanity check the date (can't be in the future, or more than 1 year in the past)
-  if (waterDate) {
-    const date = new Date(waterDate);
+  if (date) {
+    const waterDate = new Date(date);
     const now = new Date();
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    if (date > now) {
+    if (waterDate > now) {
       res.status(400).json({ message: "Water date cannot be in the future." });
       return;
     }
-    if (date < oneYearAgo) {
+    if (waterDate < oneYearAgo) {
       res.status(400).json({
         message: "Water date cannot be more than 1 year in the past.",
       });
@@ -72,6 +72,30 @@ export const validateWater = async (
     }
   }
 
+  // Check if plant exists in the database
+  try {
+    const plant = await plantRepository.findPlantById(Number(plantId));
+    if (!plant) {
+      res.status(400).json({ message: `Plant ${plantId} not found.` });
+      return;
+    }
+
+    // Check if the plant belongs to the user
+    const userId = (req as any).userId;
+    if (plant.user.id !== userId) {
+      res.status(400).json({
+        message: `Plant ${plantId} does not belong to user ${userId}.`,
+      });
+      return;
+    }
+
+    // Proceed to next function
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+    return;
+  }
+
   // Proceed to next function
-  next();
+  //next();
 };
