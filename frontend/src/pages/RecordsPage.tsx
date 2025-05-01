@@ -1,59 +1,24 @@
 import { useSelector } from "react-redux";
 import { Accordion } from "react-bootstrap";
 import { Plant } from "../models/plant";
-import { GrowthRecord } from "../models/growth";
-import { WaterRecord } from "../models/water";
 import "../styles/recordsPage.scss";
+import GrowthRecordTable from "../components/records/GrowthRecordTable";
+import WaterRecordTable from "../components/records/WaterRecordTable";
+import TemperatureRecordTable from "../components/records/TemperatureRecordTable";
+import HumidityRecordTable from "../components/records/HumidityRecordTable";
+import LightRecordTable from "../components/records/LightRecordTable";
+import SoilMoistureRecordTable from "../components/records/SoilMoistureRecordTable";
 
 const RecordsPage = () => {
   const selectedPlant = useSelector(
     (state: { plant: { selectedPlant: Plant } }) => state.plant.selectedPlant
   );
 
-  // Dummy data for demonstration purposes
-  // Replace with real fetched records once records are refactored
-  const today = new Date(Date.now());
-  const growthRecords: GrowthRecord[] = [
-    {
-      id: 1,
-      date: new Date("2025-03-15"),
-      height: 15,
-      plant: 5,
-      uom: 1,
-      created_: today,
-      updated_: today,
-    },
-    {
-      id: 2,
-      date: new Date("2025-03-15"),
-      height: 18,
-      plant: 5,
-      uom: 1,
-      created_: today,
-      updated_: today,
-    },
-  ];
-
-  const waterRecords: WaterRecord[] = [
-    {
-      id: 1,
-      date: new Date("2025-03-15"),
-      amount: 24,
-      plant: 5,
-      uom: 3,
-      created_: today,
-      updated_: today,
-    },
-    {
-      id: 2,
-      date: new Date("2025-03-15"),
-      amount: 31,
-      plant: 5,
-      uom: 3,
-      created_: today,
-      updated_: today,
-    },
-  ];
+  // add other records once implemented
+  // light record
+  // soil moisture record
+  // temperature record
+  // humidity record
 
   return (
     <div className="page-container">
@@ -71,46 +36,58 @@ const RecordsPage = () => {
           <Accordion.Item eventKey="0">
             <Accordion.Header>Growth Records</Accordion.Header>
             <Accordion.Body>
-              {growthRecords.length > 0 ? (
-                <ul>
-                  {growthRecords.map((record) => (
-                    <li key={record.id}>
-                      Date: {record.date.toLocaleDateString()}, Height:{" "}
-                      {record.height} cm
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No growth records available.</p>
-              )}
+              <GrowthRecordTable/>
             </Accordion.Body>
           </Accordion.Item>
 
           {/* Water Records Dropdown */}
+          
           <Accordion.Item eventKey="1">
             <Accordion.Header>Water Records</Accordion.Header>
             <Accordion.Body>
-              {waterRecords.length > 0 ? (
-                <ul>
-                  {waterRecords.map((record) => (
-                    <li key={record.id}>
-                      Date: {record.date.toLocaleDateString()}, Amount:{" "}
-                      {record.amount} ml
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No water records available.</p>
-              )}
+              <WaterRecordTable/>
             </Accordion.Body>
           </Accordion.Item>
 
-          {/* Add more dropdowns for other record types as needed */}
+          {/* Temperature Records Dropdown */}
+          
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Temperature Records</Accordion.Header>
+            <Accordion.Body>
+              <TemperatureRecordTable/>
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Humidity Records Dropdown */}
+          
+          <Accordion.Item eventKey="3">
+            <Accordion.Header>Humidity Records</Accordion.Header>
+            <Accordion.Body>
+              <HumidityRecordTable/>
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Light Records Dropdown */}
+          
+          <Accordion.Item eventKey="4">
+            <Accordion.Header>Light Records</Accordion.Header>
+            <Accordion.Body>
+              <LightRecordTable/>
+            </Accordion.Body>
+          </Accordion.Item>
+
+          {/* Soil Moisture Records Dropdown */}
+          
+          <Accordion.Item eventKey="5">
+            <Accordion.Header>Soil Moisture Records</Accordion.Header>
+            <Accordion.Body>
+              <SoilMoistureRecordTable/>
+            </Accordion.Body>
+          </Accordion.Item>
+          
         </Accordion>
       ) : (
-        <p className="text-center mt-4">
-          Please select a plant to view records.
-        </p>
+        <p className="text-center mt-4">Please select a plant to view records.</p>
       )}
     </div>
   );

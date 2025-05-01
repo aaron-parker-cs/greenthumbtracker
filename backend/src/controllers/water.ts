@@ -25,7 +25,7 @@ export const getWaterRecords = async (req: Request, res: Response) => {
 
 export const createWaterRecord = async (req: Request, res: Response) => {
   const plantId = Number(req.params.plantId);
-  const { waterAmount, waterDate, uomId } = req.body;
+  const { amount, date, uomId } = req.body;
   try {
     const userId = (req as any).userId;
 
@@ -42,8 +42,8 @@ export const createWaterRecord = async (req: Request, res: Response) => {
 
     const record = await waterRepository.createWaterRecord(
       plantId,
-      waterDate,
-      waterAmount,
+      date,
+      amount,
       uom
     );
     res.status(200).json({ message: "Water Record created successfully" });
@@ -57,7 +57,7 @@ export const createWaterRecord = async (req: Request, res: Response) => {
 export const updateWaterRecord = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const plantId = Number(req.params.plantId);
-  const { waterAmount, waterDate, uomId } = req.body;
+  const { amount, date, uomId } = req.body;
   try {
     const userId = (req as any).userId;
 
@@ -75,8 +75,8 @@ export const updateWaterRecord = async (req: Request, res: Response) => {
     const record = await waterRepository.updateWaterRecord(
       id,
       plantId,
-      waterDate,
-      waterAmount,
+      date,
+      amount,
       uom
     );
     res.status(200).json({ message: "Water Record updated successfully" });
