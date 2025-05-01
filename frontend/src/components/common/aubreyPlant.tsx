@@ -12,18 +12,18 @@ const AubreyPlant: React.FC = () => {
       <div className="plant-container">
         <div className="plant-upper">
           <img
-            src="/images/aubrey-head-open.png"
+            src="../../../public/aubrey-head-open.png"
             className="plant-head"
             alt="Aubrey Head"
           />
           <img
-            src="/images/aubrey-torso.png"
+            src="../../../public/aubrey-torso.png"
             className="plant-torso"
             alt="Aubrey Body"
           />
         </div>
         <img
-          src="/images/aubrey-pot.png"
+          src="../../../public/aubrey-pot.png"
           className="plant-pot"
           alt="Aubrey Pot"
         />

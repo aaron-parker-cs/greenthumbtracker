@@ -12,6 +12,8 @@ import {
   fetchPlantsSuccess,
   selectPlant,
 } from "../redux/plant/slice";
+import { Plant } from "../models/plant";
+import AubreyPlant from "../components/common/aubreyPlant";
 
 const Home = () => {
   const user = useSelector((state: { user: UserState }) => state.user);
@@ -104,6 +106,7 @@ const Home = () => {
           <Chart header={header} data={data} />
         ))}
       </Container>
+      <AubreyPlant/>
     </Container>
   );
 };
