@@ -15,6 +15,7 @@ import {
   selectPlant,
 } from "../redux/plant/slice";
 import { Plant } from "../models/plant";
+import AubreyPlant from "../components/common/aubreyPlant";
 
 const Home = () => {
   const [open, setOpen] = useState(false); // used for side nav bar
@@ -155,6 +156,7 @@ const Home = () => {
           <Chart header={header} data={data} />
         ))}
       </Container>
+      <AubreyPlant/>
     </Container>
   );
 };
