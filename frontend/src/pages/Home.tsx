@@ -2,7 +2,6 @@ import { Container } from "react-bootstrap";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import Chart from "../components/common/Chart";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { UserState } from "../redux/user/slice";
 import { api } from "../redux/api";
@@ -12,7 +11,6 @@ import {
   fetchPlantsSuccess,
   selectPlant,
 } from "../redux/plant/slice";
-import { Plant } from "../models/plant";
 import AubreyPlant from "../components/common/aubreyPlant";
 
 const Home = () => {
